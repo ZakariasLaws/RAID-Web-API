@@ -11,7 +11,8 @@ const newDate = () => new Date().toString();
 
 function mustBeInArray(array, id) {
     return new Promise((resolve, reject) => {
-        const row = array.find(r => r.id === id);
+        const row = array.find(r => r.id == id);
+        // console.log(row);
         if (!row) {
             reject({
                 message: 'ID is not good',
@@ -25,7 +26,7 @@ function mustBeInArray(array, id) {
 function writeJSONFile(filename, content) {
     fs.writeFileSync(filename, JSON.stringify(content), 'utf8', (err) => {
         if (err) {
-            console.log(err)
+            console.log(err);
         }
     })
 }

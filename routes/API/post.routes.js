@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const post = require('./../../models/post.model');
+const constellation = require('./../../models/constellation.model');
 const m = require('./../../helpers/middlewares');
 
 /* All devices */
@@ -67,8 +68,47 @@ router.delete('/:id', m.mustBeInteger, async (req, res) => {
         .catch(err => {
             if (err.status) {
                 res.status(err.status).json({ message: err.message })
+            } else {
+                res.status(500).json({message: err.message})
             }
-            res.status(500).json({ message: err.message })
+        })
+});
+
+/* Get results */
+router.get('/result/:id', async (req, res) => {
+    const id = req.params.id;
+    await  post.getDevice(id)
+        .then(post => {
+            console.log("Found: " + post);
+            const filename = post.resultDir;
+            post.getResult(filename)
+                .then(result => {
+                    res.json({
+                        result
+                    });
+                }).catch(err => {
+                    throw err;
+                });
+        })
+        .catch(err => {
+            if (err.status) {
+                res.status(err.status).json({ message: err.message })
+            } else {
+                res.status(500).json({ message: err.message })
+            }
+        });
+});
+
+/* Start Constellation */
+router.get('/constellation/', async (req, res) => {
+    await constellation.startConstellation()
+        .then(post => res.json(post))
+        .catch(err => {
+            if (err.status) {
+                res.status(err.status).json({ message: err.message })
+            } else {
+                res.status(500).json({ message: err.message })
+            }
         })
 });
 

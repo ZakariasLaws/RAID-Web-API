@@ -7,9 +7,18 @@ function mustBeInteger(req, res, next) {
     }
 }
 
-function checkFieldsPost(req, res, next) {
-    const { title, role, contexts, target, modelName, batchSize, dataDir } = req.body;
-    if (title && role && contexts && target && modelName && batchSize && dataDir) {
+function checkFieldsPost(err, req, res, next) {
+    // const { title, role, contexts, target, modelName, batchSize, dataDir, resultDir } = req.body;
+
+    const { title, role, ip } = req.body;
+
+    if (!(title && role && ip)){
+        res.status(400)({
+           message: 'missing fields'
+        });
+    }
+
+    if (role === 't' || role === 's' || role === 'p'){
         next()
     } else {
         res.status(400).json({ message: 'fields are not good' })

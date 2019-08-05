@@ -80,7 +80,7 @@
 				// Reset scroll position on hide.
 					resetScroll: false,
 
-				// Reset forms on hide.
+				// Reset addDeviceForm on hide.
 					resetForms: false,
 
 				// Side of viewport the panel will appear.
@@ -125,7 +125,7 @@
 								if (config.resetScroll)
 									$this.scrollTop(0);
 
-							// Reset forms.
+							// Reset addDeviceForm.
 								if (config.resetForms)
 									$this.find('form').each(function() {
 										this.reset();
@@ -297,7 +297,7 @@
 	};
 
 	/**
-	 * Apply "placeholder" attribute polyfill to one or more forms.
+	 * Apply "placeholder" attribute polyfill to one or more addDeviceForm.
 	 * @return {jQuery} jQuery object.
 	 */
 	$.fn.placeholder = function() {
