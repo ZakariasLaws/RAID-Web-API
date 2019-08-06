@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const post = require('./../../models/post.model');
-const constellation = require('./../../models/constellation.model');
-const m = require('./../../helpers/middlewares');
+const post = require('../models/post.model');
+const m = require('../helpers/middlewares');
 
 /* All devices */
 router.get('/', async (req, res) => {
@@ -97,19 +96,6 @@ router.get('/result/:id', async (req, res) => {
                 res.status(500).json({ message: err.message })
             }
         });
-});
-
-/* Start Constellation */
-router.get('/constellation/', async (req, res) => {
-    await constellation.startConstellation()
-        .then(post => res.json(post))
-        .catch(err => {
-            if (err.status) {
-                res.status(err.status).json({ message: err.message })
-            } else {
-                res.status(500).json({ message: err.message })
-            }
-        })
 });
 
 // Routes

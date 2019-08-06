@@ -65,6 +65,18 @@ const fields = [
         label: "IP address of device (e.g. 10.72.25.33)",
         placeholder: "IP",
         rules: "string|min:5|required"
+    },
+    {
+        name: "username",
+        label: "Username of device (for remote command execution)",
+        placeholder: "odroid",
+        rules: "string|min:1|required"
+    },
+    {
+        name: "password",
+        label: "Password of device (for remote command execution)",
+        placeholder: "",
+        rules: "string|min:1|required"
     }
 ];
 

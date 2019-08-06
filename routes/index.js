@@ -7,6 +7,7 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.use('/api/devices', require('./API/post.routes'));
+router.use('/api/devices', require('./post.routes'));
+router.use('/constellation', require('./constellation.routes'));
 
 module.exports = router;

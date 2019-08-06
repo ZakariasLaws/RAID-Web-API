@@ -13,7 +13,6 @@ class Content extends Component {
             predictors: [],
             targets: [],
             sources: [],
-            running: false,
         };
 
         this.startConstellation = this.startConstellation.bind(this);
@@ -22,7 +21,7 @@ class Content extends Component {
         this.stopDevice = this.stopDevice.bind(this);
 
         window.onbeforeunload = (e) => {
-            if (this.state.running){
+            if (this.props.running){
                 e.preventDefault();
                 console.log("Constellation instance is running, are you sure you want to leave page?");
                 e.returnValue = '';
@@ -31,17 +30,66 @@ class Content extends Component {
     }
 
     startConstellation(){
-        this.setState({running:true});
-        console.log("Start server");
+        fetch(`${Utils.CONSTELLATION_URL.start}?binDir=${Utils.CONSTELLATION_BIN_DIR}`)
+            .then(response => response.json())
+            .then(response => {
+                console.log(response);
+                this.props.updateRunning(true);
+            })
+            .catch(error => {
+                console.log("Failed to start Constellation");
+                console.log(error);
+            });
     }
 
     stopConstellation(){
-        this.setState({running:false});
-        console.log("Stop server");
+        fetch(Utils.CONSTELLATION_URL.stop)
+            .then(response => response.json())
+            .then(response => {
+                console.log(response);
+                this.props.updateRunning(false);
+            })
+            .catch(error => {
+                console.log("Failed to stop Constellation");
+                console.log(error);
+            });
     }
 
-    startDevice(id){
-        console.log("starting: " + id)
+    startDevice(id, ip, username, password, binDir, contexts, params){
+        let values = {
+            id: id,
+            ip: ip,
+            username: username,
+            password: password,
+            binDir: binDir,
+            contexts: '',
+            params: params,
+        };
+
+        for(let i=0; i<contexts.length; i++){
+            values.contexts += contexts[i];
+            if (i < contexts.length){
+                values += ',';
+            }
+        }
+
+        return new Promise((resolve, reject) => {
+            fetch(Utils.CONSTELLATION_URL.startTarget, {
+                method: 'POST',
+                body: JSON.stringify(values),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                console.log("Device started successfully");
+                resolve(response);
+            })
+            .catch(err => {
+                console.log("Device failed to start");
+                reject(err);
+            });
+        });
     }
 
     stopDevice(id){
@@ -97,24 +145,24 @@ class Content extends Component {
                     <div className="device">
                         <h2> Sources </h2>
                         <div className="deviceContent deviceSource">
-                            { this.state.sources.map((source, key) => <Source data={source} key={key} running={this.state.running} startDevice={this.startDevice} stopDevice={this.stopDevice}/> ) }
+                            { this.state.sources.map((source, key) => <Source data={source} key={key} running={this.props.running} startDevice={this.startDevice} stopDevice={this.stopDevice}/> ) }
                         </div>
                     </div>
                     <div className="device">
                         <h2> Targets </h2>
                         <div className="deviceContent deviceTarget">
-                            { this.state.targets.map((target, key) => <Target data={target} key={key} running={this.state.running} startDevice={this.startDevice} stopDevice={this.stopDevice}/> ) }
+                            { this.state.targets.map((target, key) => <Target data={target} key={key} running={this.props.running} startDevice={this.startDevice} stopDevice={this.stopDevice}/> ) }
                         </div>
                     </div>
                     <div className="device last-device">
                         <h2> Predictors </h2>
                         <div className="deviceContent devicePredictor">
-                            { this.state.predictors.map((predictor, key) => <Predictor data={predictor} key={key} running={this.state.running} startDevice={this.startDevice} stopDevice={this.stopDevice}/> ) }
+                            { this.state.predictors.map((predictor, key) => <Predictor data={predictor} key={key} running={this.props.running} startDevice={this.startDevice} stopDevice={this.stopDevice}/> ) }
                         </div>
                     </div>
                     <div className="run-constellation">
                         <div className="float-left server-wrapper">
-                            <ConstellationServer running={this.state.running} startConstellation={this.startConstellation} stopConstellation={this.stopConstellation}/>
+                            <ConstellationServer running={this.props.running} startConstellation={this.startConstellation} stopConstellation={this.stopConstellation}/>
                         </div>
                         <div className="float-right result-wrapper">
                             <div className="result-title-box">

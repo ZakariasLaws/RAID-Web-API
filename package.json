@@ -17,6 +17,7 @@
     "mobx-react": "^6.1.1",
     "mobx-react-form": "^2.0.4",
     "morgan": "~1.9.1",
+    "node-ssh": "^6.0.0",
     "plotly.js": "1.49.1",
     "react-plotly.js": "2.3.0",
     "react-sidebar": "^3.0.2",

@@ -83126,8 +83126,7 @@ function (_Component) {
     _this.state = {
       predictors: [],
       targets: [],
-      sources: [],
-      running: false
+      sources: []
     };
     _this.startConstellation = _this.startConstellation.bind(_assertThisInitialized(_this));
     _this.stopConstellation = _this.stopConstellation.bind(_assertThisInitialized(_this));
@@ -83135,7 +83134,7 @@ function (_Component) {
     _this.stopDevice = _this.stopDevice.bind(_assertThisInitialized(_this));
 
     window.onbeforeunload = function (e) {
-      if (_this.state.running) {
+      if (_this.props.running) {
         e.preventDefault();
         console.log("Constellation instance is running, are you sure you want to leave page?");
         e.returnValue = '';
@@ -83148,23 +83147,71 @@ function (_Component) {
   _createClass(Content, [{
     key: "startConstellation",
     value: function startConstellation() {
-      this.setState({
-        running: true
+      var _this2 = this;
+
+      fetch("".concat(_utils__WEBPACK_IMPORTED_MODULE_2__["Utils"].CONSTELLATION_URL.start, "?binDir=").concat(_utils__WEBPACK_IMPORTED_MODULE_2__["Utils"].CONSTELLATION_BIN_DIR)).then(function (response) {
+        return response.json();
+      }).then(function (response) {
+        console.log(response);
+
+        _this2.props.updateRunning(true);
+      })["catch"](function (error) {
+        console.log("Failed to start Constellation");
+        console.log(error);
       });
-      console.log("Start server");
     }
   }, {
     key: "stopConstellation",
     value: function stopConstellation() {
-      this.setState({
-        running: false
+      var _this3 = this;
+
+      fetch(_utils__WEBPACK_IMPORTED_MODULE_2__["Utils"].CONSTELLATION_URL.stop).then(function (response) {
+        return response.json();
+      }).then(function (response) {
+        console.log(response);
+
+        _this3.props.updateRunning(false);
+      })["catch"](function (error) {
+        console.log("Failed to stop Constellation");
+        console.log(error);
       });
-      console.log("Stop server");
     }
   }, {
     key: "startDevice",
-    value: function startDevice(id) {
-      console.log("starting: " + id);
+    value: function startDevice(id, ip, username, password, binDir, contexts, params) {
+      var values = {
+        id: id,
+        ip: ip,
+        username: username,
+        password: password,
+        binDir: binDir,
+        contexts: '',
+        params: params
+      };
+
+      for (var i = 0; i < contexts.length; i++) {
+        values.contexts += contexts[i];
+
+        if (i < contexts.length) {
+          values += ',';
+        }
+      }
+
+      return new Promise(function (resolve, reject) {
+        fetch(_utils__WEBPACK_IMPORTED_MODULE_2__["Utils"].CONSTELLATION_URL.startTarget, {
+          method: 'POST',
+          body: JSON.stringify(values),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then(function (response) {
+          console.log("Device started successfully");
+          resolve(response);
+        })["catch"](function (err) {
+          console.log("Device failed to start");
+          reject(err);
+        });
+      });
     }
   }, {
     key: "stopDevice",
@@ -83174,7 +83221,7 @@ function (_Component) {
   }, {
     key: "updateDevices",
     value: function updateDevices() {
-      var _this2 = this;
+      var _this4 = this;
 
       fetch(_utils__WEBPACK_IMPORTED_MODULE_2__["Utils"].API_URL).then(function (response) {
         return response.json();
@@ -83197,7 +83244,7 @@ function (_Component) {
           }
         });
 
-        _this2.setState({
+        _this4.setState({
           predictors: predictors,
           sources: sources,
           targets: targets
@@ -83221,7 +83268,7 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this3 = this;
+      var _this5 = this;
 
       if (this.props.view === 'home') {
         return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
@@ -83238,9 +83285,9 @@ function (_Component) {
           return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_devices_Source__WEBPACK_IMPORTED_MODULE_5__["default"], {
             data: source,
             key: key,
-            running: _this3.state.running,
-            startDevice: _this3.startDevice,
-            stopDevice: _this3.stopDevice
+            running: _this5.props.running,
+            startDevice: _this5.startDevice,
+            stopDevice: _this5.stopDevice
           });
         }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
           className: "device"
@@ -83250,9 +83297,9 @@ function (_Component) {
           return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_devices_Target__WEBPACK_IMPORTED_MODULE_4__["default"], {
             data: target,
             key: key,
-            running: _this3.state.running,
-            startDevice: _this3.startDevice,
-            stopDevice: _this3.stopDevice
+            running: _this5.props.running,
+            startDevice: _this5.startDevice,
+            stopDevice: _this5.stopDevice
           });
         }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
           className: "device last-device"
@@ -83262,16 +83309,16 @@ function (_Component) {
           return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_devices_Predictor__WEBPACK_IMPORTED_MODULE_3__["default"], {
             data: predictor,
             key: key,
-            running: _this3.state.running,
-            startDevice: _this3.startDevice,
-            stopDevice: _this3.stopDevice
+            running: _this5.props.running,
+            startDevice: _this5.startDevice,
+            stopDevice: _this5.stopDevice
           });
         }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
           className: "run-constellation"
         }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
           className: "float-left server-wrapper"
         }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ConstellationServer, {
-          running: this.state.running,
+          running: this.props.running,
           startConstellation: this.startConstellation,
           stopConstellation: this.stopConstellation
         })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
@@ -83352,6 +83399,10 @@ var $btn = 'f6 link dim bn br2 ph3 pv2 mr2 dib white bg-dark-blue btn-primary'; 
     field: form.$('role')
   }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_observer__WEBPACK_IMPORTED_MODULE_2__["default"], {
     field: form.$('ip')
+  }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_observer__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    field: form.$('username')
+  }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_observer__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    field: form.$('password')
   }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("br", null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
     type: "submit",
     className: $btn,
@@ -83439,6 +83490,16 @@ var fields = [{
   label: "IP address of device (e.g. 10.72.25.33)",
   placeholder: "IP",
   rules: "string|min:5|required"
+}, {
+  name: "username",
+  label: "Username of device (for remote command execution)",
+  placeholder: "odroid",
+  rules: "string|min:1|required"
+}, {
+  name: "password",
+  label: "Password of device (for remote command execution)",
+  placeholder: "",
+  rules: "string|min:1|required"
 }];
 var hooks = {
   onSuccess: function onSuccess(form) {
@@ -83565,17 +83626,31 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(App).call(this, props));
     _this.state = {
-      view: 'home'
+      view: 'home',
+      running: false
     };
     _this.changeView = _this.changeView.bind(_assertThisInitialized(_this));
+    _this.updateRunning = _this.updateRunning.bind(_assertThisInitialized(_this));
     return _this;
   }
 
   _createClass(App, [{
     key: "changeView",
     value: function changeView(newView) {
+      if (this.state.running) {
+        alert("Stop current Constellation instance first");
+        return;
+      }
+
       this.setState({
         view: newView
+      });
+    }
+  }, {
+    key: "updateRunning",
+    value: function updateRunning(newVal) {
+      this.setState({
+        running: newVal
       });
     }
   }, {
@@ -83586,7 +83661,9 @@ function (_Component) {
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_sidebar__WEBPACK_IMPORTED_MODULE_3__["default"], {
         content: react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Content__WEBPACK_IMPORTED_MODULE_4__["default"], {
           view: this.state.view,
-          changeView: this.changeView
+          changeView: this.changeView,
+          running: this.state.running,
+          updateRunning: this.updateRunning
         }),
         changeView: this.changeView
       }));
@@ -83985,6 +84062,7 @@ function (_Component) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils */ "./src/utils.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -84005,6 +84083,7 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
+
 var Target =
 /*#__PURE__*/
 function (_Component) {
@@ -84017,7 +84096,9 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Target).call(this, props));
     _this.state = {
-      running: false
+      running: false,
+      contexts: [],
+      binDir: _utils__WEBPACK_IMPORTED_MODULE_1__["Utils"].ODROID_BIN_DIR
     };
     _this.startDevice = _this.startDevice.bind(_assertThisInitialized(_this));
     _this.stopDevice = _this.stopDevice.bind(_assertThisInitialized(_this));
@@ -84027,22 +84108,33 @@ function (_Component) {
   _createClass(Target, [{
     key: "startDevice",
     value: function startDevice() {
+      var _this2 = this;
+
       if (!this.props.running) {
         alert('Start the server first');
         return;
       }
 
-      this.props.startDevice(this.props.id);
-      this.setState({
-        running: true
+      var params = [];
+      this.props.startDevice(this.props.id, this.props.data.ip, this.props.data.username, this.props.data.password, this.state.binDir, this.state.contexts, params).then(function (response) {
+        _this2.setState({
+          running: true
+        });
+      })["catch"](function (err) {
+        console.log(err);
       });
     }
   }, {
     key: "stopDevice",
     value: function stopDevice() {
-      this.props.stopDevice(this.props.id);
-      this.setState({
-        running: false
+      var _this3 = this;
+
+      this.props.stopDevice(this.props.id).then(function (response) {
+        _this3.setState({
+          running: false
+        });
+      })["catch"](function (response) {
+        console.log(response);
       });
     }
   }, {
@@ -84061,7 +84153,7 @@ function (_Component) {
         className: "card-body"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", {
         className: "card-title"
-      }, "Contexts: ", this.props.data.contexts), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", null, "IP: ", this.props.data.ip), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      }, "Contexts: ", this.state.contexts), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", null, "IP: ", this.props.data.ip), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "card-text"
       }, this.state.running ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
         className: "btn-danger",
@@ -84253,7 +84345,15 @@ if(false) {}
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Utils", function() { return Utils; });
 var Utils = {
-  API_URL: '/api/devices'
+  API_URL: '/api/devices',
+  CONSTELLATION_URL: {
+    start: '/constellation/start',
+    stop: '/constellation/stop',
+    startTarget: '/constellation/target/start',
+    stopTarget: '/constellation/target/stop'
+  },
+  CONSTELLATION_BIN_DIR: "/home/zaklaw01/Projects/odroid-constellation/edgeinference-constellation/build/install/edgeinference-constellation",
+  ODROID_BIN_DIR: '/home/odroid/Constellation/edgeinference-constellation/build/install/edgeinference-constellation'
 };
 
 /***/ })

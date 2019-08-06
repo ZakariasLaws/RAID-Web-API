@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
+import {Utils} from "../utils";
 
 class Target extends Component {
     constructor(props){
         super(props);
 
         this.state = {
-            running: false
+            running: false,
+            contexts: [],
+            binDir: Utils.ODROID_BIN_DIR,
         };
 
         this.startDevice = this.startDevice.bind(this);
@@ -18,13 +21,25 @@ class Target extends Component {
             return;
         }
 
-        this.props.startDevice(this.props.id);
-        this.setState({running: true});
+        let params = [];
+
+        this.props.startDevice(this.props.id, this.props.data.ip, this.props.data.username, this.props.data.password, this.state.binDir, this.state.contexts, params)
+            .then(response => {
+                this.setState({running: true});
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
 
     stopDevice(){
-        this.props.stopDevice(this.props.id);
-        this.setState({running: false});
+        this.props.stopDevice(this.props.id)
+            .then(response => {
+                this.setState({running: false});
+            })
+            .catch(response => {
+                console.log(response);
+            });
     }
 
     render() {
@@ -38,7 +53,7 @@ class Target extends Component {
                             </div> : '' }
                 </div>
                 <div className="card-body">
-                    <h6 className="card-title">Contexts: {this.props.data.contexts}</h6>
+                    <h6 className="card-title">Contexts: {this.state.contexts}</h6>
                     <h6>IP: {this.props.data.ip}</h6>
                     <div className="card-text">
                         { this.state.running ?  <button className="btn-danger" onClick={this.stopDevice}>STOP</button> :

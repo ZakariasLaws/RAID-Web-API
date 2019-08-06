@@ -9,12 +9,20 @@ class App extends Component {
     constructor(props) {
         super(props);
 
-        this.state={view: 'home'};
+        this.state={
+            view: 'home',
+            running: false,
+        };
 
         this.changeView = this.changeView.bind(this);
+        this.updateRunning = this.updateRunning.bind(this);
     }
 
     changeView(newView) {
+        if (this.state.running) {
+            alert("Stop current Constellation instance first");
+            return;
+        }
         this.setState(
             {
                 view: newView
@@ -22,10 +30,14 @@ class App extends Component {
         );
     }
 
+    updateRunning(newVal){
+        this.setState({running: newVal});
+    }
+
     render() {
         return (
             <div className="wrapper">
-                <SideBar content={<Content view={this.state.view} changeView={this.changeView}/>} changeView={this.changeView}/>
+                <SideBar content={<Content view={this.state.view} changeView={this.changeView} running={this.state.running} updateRunning={this.updateRunning}/>} changeView={this.changeView}/>
             </div>
         )
     }
