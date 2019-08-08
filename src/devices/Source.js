@@ -90,7 +90,7 @@ class Source extends Component {
     stopDevice(){
         this.props.stopDevice(this.props.id, 's')
             .then(response => {
-                this.checkIfDeviceStopped(this.props.id, 's', counter);
+                this.checkIfDeviceStopped(this.props.id, 's', 0);
             })
             .catch(response => {
                 console.log(response);

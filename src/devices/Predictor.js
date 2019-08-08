@@ -37,6 +37,8 @@ class Predictor extends Component {
         }
         let params = `-context ${this.state.contexts.split(" ").join(',')}`;
 
+        console.log(params);
+
         this.props.startDevice(this.props.id, this.props.data.ip, this.props.data.username, this.props.data.password, 'p', params)
             .then(response => {
                 this.setState({running: true});

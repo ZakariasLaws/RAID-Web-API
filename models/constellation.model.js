@@ -2,7 +2,7 @@ let fs = require('fs');
 let node_ssh = require('node-ssh');
 const { spawn } = require('child_process');
 
-const poolName = "POOL.NAME";
+const poolName = "pool.name";
 const CONSTELLATION_BIN_DIR = "/home/zaklaw01/Projects/odroid-constellation/edgeinference-constellation/build/install/edgeinference-constellation";
 
 // Directory ame used for logging
@@ -17,6 +17,8 @@ let target_processes = {};
 let source_processes = {};
 let predictor_processes = {};
 
+let buffer = [];
+
 /**
  * Sleep for given time
  * @param ms time to sleep
@@ -29,13 +31,13 @@ function wait(ms){
     }
 }
 
-function createRootLogDir(executionName, counter){
+function recursiveCreateFileName(executionName, counter){
     const tmp = logDir + '/' + executionName + '-' + counter.toString();
     if (!fs.existsSync(tmp)){
         fs.mkdirSync(tmp);
         return tmp;
     }
-    return createRootLogDir(executionName, counter + 1);
+    return recursiveCreateFileName(executionName, counter + 1);
 
 }
 
@@ -85,7 +87,7 @@ function startConstellation(binDir, executionName) {
             logDir = logDir + '/' + executionName;
             fs.mkdirSync(logDir);
         } else {
-            createRootLogDir(executionName, 1); // Recursively look for an available name
+            recursiveCreateFileName(executionName, 1); // Recursively look for an available name
         }
 
         server_wstream = fs.createWriteStream(logDir + '/constellation-server.log');
@@ -118,7 +120,7 @@ function startConstellation(binDir, executionName) {
             server_wstream.end();
         });
 
-        wait(1000);
+        wait(2000);
         resolve(1);
     });
 }
@@ -135,7 +137,7 @@ function startDevice(data){
 
         // Add output file to logs
         if (data.role === 't'){
-            params.push('-outputFile ' + logDir + '/targets/' + data.id + '-results.log');
+            params.push('-outputFile ' + require('path').resolve(__dirname, '..') + '/' + logDir + '/targets/' + data.id + '-results.log');
         }
         let handler;
         let deviceLogDir;
@@ -146,21 +148,21 @@ function startDevice(data){
                 if (!fs.existsSync(logDir + '/targets')){
                     fs.mkdirSync(logDir + '/targets');
                 }
-                deviceLogDir = logDir + '/targets/' + data.id + '.log';
+                deviceLogDir = logDir + '/targets/' + data.id + '.log'; // Might overwrite existing file
                 target_processes[data.id] = handler;
                 break;
             case 's':
                 if (!fs.existsSync(logDir + '/sources')){
                     fs.mkdirSync(logDir + '/sources');
                 }
-                deviceLogDir = logDir + '/sources/' + data.id + '.log';
+                deviceLogDir = logDir + '/sources/' + data.id + '.log'; // Might overwrite existing file
                 source_processes[data.id] = handler;
                 break;
             case 'p':
                 if (!fs.existsSync(logDir + '/predictors')){
                     fs.mkdirSync(logDir + '/predictors');
                 }
-                deviceLogDir = logDir + '/predictors/' + data.id + '.log';
+                deviceLogDir = logDir + '/predictors/' + data.id + '.log'; // Might overwrite existing file
                 predictor_processes[data.id] = handler;
                 break;
             default:
@@ -173,14 +175,14 @@ function startDevice(data){
 
         const role = data.role;
         handler[1].stdout.on('data', (data) => {
-            // if (role === 't')
-            console.log(`Target stdout: ${data}`);
+            if (role === 't')
+                console.log(`Target stdout: ${data}`);
             handler[3].write(`${data}`);
         });
 
         handler[1].stderr.on('data', (data) => {
-            // if (role === 't')
-            console.log(`Target stderr: ${data}`);
+            if (role === 't')
+                console.log(`Target stderr: ${data}`);
             handler[3].write(`${data}`);
         });
 
@@ -259,10 +261,21 @@ function deviceIsStopped(id, role){
     });
 }
 
+/**
+ * Only for Target
+ * @param id
+ */
+function getResult(id){
+    const buf2 = buffer;
+    buffer = [];
+    return buf2;
+}
+
 module.exports = {
     startConstellation,
     stopConstellation,
     startDevice,
     stopDevice,
     deviceIsStopped,
+    getResult,
 };
