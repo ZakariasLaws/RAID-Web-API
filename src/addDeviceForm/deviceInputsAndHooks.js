@@ -91,7 +91,8 @@ const hooks = {
                 'Content-Type': 'application/json'
             }
         })
-        .then(result => {
+            .then(Utils.handleFetchErrors)
+            .then(result => {
             console.log(JSON.stringify(result));
 
         }).catch(response => {

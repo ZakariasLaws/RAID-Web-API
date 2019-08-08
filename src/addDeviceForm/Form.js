@@ -12,7 +12,7 @@ export default observer(({ form }) => (
         <SimpleInput field={form.$('role')} />
         <SimpleInput field={form.$('ip')} />
         <SimpleInput field={form.$('username')} />
-        <SimpleInput field={form.$('password')} />
+        <SimpleInput type="password" field={form.$('password')} />
         {/*<SimpleInput field={form.$('contexts')} />*/}
         {/*<SimpleInput field={form.$('target')} />*/}
         {/*<SimpleInput field={form.$('modelName')} />*/}

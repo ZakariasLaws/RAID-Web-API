@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Sidebar from "react-sidebar";
+import {Utils} from "./utils";
 
 class SideBar extends Component {
     constructor(props) {
@@ -42,8 +43,8 @@ class SideBarContent extends Component {
         return (
             <div className="sidebar-wrapper" >
                 <h2> Menu </h2>
-                <button type="button" className="sidebar-item btn btn-primary" onClick={() => { this.props.changeView('home'); this.props.setSidebarOpen(false)}}> Home </button>
-                <button type="button" className="sidebar-item btn btn-primary" onClick={() => { this.props.changeView('deviceManagement'); this.props.setSidebarOpen(false)}}> Devices </button>
+                <button type="button" className="sidebar-item btn btn-primary" onClick={() => { this.props.changeView(Utils.views.home); this.props.setSidebarOpen(false)}}> Home </button>
+                <button type="button" className="sidebar-item btn btn-primary" onClick={() => { this.props.changeView(Utils.views.deviceManagement); this.props.setSidebarOpen(false)}}> Devices </button>
             </div>
         );
     }

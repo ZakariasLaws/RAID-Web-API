@@ -30,6 +30,7 @@ class DeviceManagement extends Component {
 
     updateDevices(){
         fetch(Utils.API_URL)
+            .then(Utils.handleFetchErrors)
             .then(response => response.json())
             .then(response => this.setState({devices: response})
         ).catch(error => console.error('Error:', error));
@@ -83,6 +84,7 @@ class Devices extends Component {
         fetch(Utils.API_URL + "/" + this.props.id, {
                 method: 'DELETE',
             })
+            .then(Utils.handleFetchErrors)
             .then(result => {
                 this.props.updateDevices();
             }).catch(response => {

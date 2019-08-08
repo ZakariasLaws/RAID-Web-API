@@ -3,7 +3,7 @@
 <head>
     <title> {{ title }} </title>
 </head>
-<body>
+<body style="background-attachment: fixed;">
     <div id="root">
 
     <script type="text/javascript" src="build/bundle.js"></script>

@@ -4,13 +4,14 @@ import ReactDOM from 'react-dom'
 import './styles/home.scss'
 import SideBar from "./sidebar"
 import Content from "./Content";
+import {Utils} from "./utils";
 
 class App extends Component {
     constructor(props) {
         super(props);
 
         this.state={
-            view: 'home',
+            view: Utils.views.home,
             running: false,
         };
 
@@ -37,6 +38,7 @@ class App extends Component {
     render() {
         return (
             <div className="wrapper">
+                <div className="main-title"><h1 className="elegantshd">Resource Aware Inference Distribution</h1></div>
                 <SideBar content={<Content view={this.state.view} changeView={this.changeView} running={this.state.running} updateRunning={this.updateRunning}/>} changeView={this.changeView}/>
             </div>
         )
