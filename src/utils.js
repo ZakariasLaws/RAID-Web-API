@@ -1,6 +1,6 @@
 const handleErrors = (response) => {
     if (!response.ok) {
-        throw Error(JSON.stringify(response));
+        throw Error(response.statusText);
     }
     return response;
 };

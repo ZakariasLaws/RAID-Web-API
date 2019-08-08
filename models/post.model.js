@@ -1,7 +1,7 @@
 var fs = require('fs');
 
-const filename = './data/devices.json';
-let posts = require('./../data/devices.json');
+const filename = './database/devices.json';
+let posts = require('../database/devices.json');
 const helper = require('./../helpers/helper.js');
 
 function getDevices() {

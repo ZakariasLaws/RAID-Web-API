@@ -14,14 +14,12 @@ class Target extends Component {
 
         this.state = {
             running: false,
-            outputFile: '~/RAID-output.log',
             extraInfoOpen: false
         };
 
         this.startDevice = this.startDevice.bind(this);
         this.stopDevice = this.stopDevice.bind(this);
         this.changeDropMenu = this.changeDropMenu.bind(this);
-        this.updateOutputFile = this.updateOutputFile.bind(this);
         this.checkIfDeviceStopped = this.checkIfDeviceStopped.bind(this);
     }
 
@@ -29,18 +27,13 @@ class Target extends Component {
         this.setState({extraInfoOpen: val});
     }
 
-    updateOutputFile(e) {
-        this.setState({outputFile: e.target.value});
-    }
-
     startDevice(){
         if (!this.props.running){
             alert('Start the server first');
             return;
         }
-        let params = [`-outputFile ${this.state.outputFile}`];
 
-        this.props.startDevice(this.props.id, this.props.data.ip, this.props.data.username, this.props.data.password, 't', params)
+        this.props.startDevice(this.props.id, this.props.data.ip, this.props.data.username, this.props.data.password, 't', "")
             .then(response => {
                 this.setState({running: true});
             })
@@ -60,7 +53,7 @@ class Target extends Component {
     }
 
     checkIfDeviceStopped(id, role, counter) {
-        if(counter > 20){
+        if(counter > 32){
             console.log("Timeout stopping TARGET");
             return;
         }

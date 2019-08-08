@@ -4,7 +4,7 @@ const constellation = require('./../models/constellation.model');
 
 /* Start Constellation */
 router.get('/start', async (req, res) => {
-    await constellation.startConstellation(req.query.binDir)
+    await constellation.startConstellation(req.query.binDir, req.query.executionName)
         .then(post => res.json(post))
         .catch(err => {
             if (err.status) {

@@ -49,7 +49,7 @@ class Predictor extends Component {
     stopDevice(){
         this.props.stopDevice(this.props.id, 'p')
             .then(response => {
-                this.checkIfDeviceStopped(this.props.id, 't', 0);
+                this.checkIfDeviceStopped(this.props.id, 'p', 0);
             })
             .catch(response => {
                 console.log(response);
@@ -58,7 +58,7 @@ class Predictor extends Component {
 
 
     checkIfDeviceStopped(id, role, counter) {
-        if(counter > 30){
+        if(counter > 33){
             console.log("Timeout stopping PREDICTOR");
             return;
         }
@@ -72,7 +72,7 @@ class Predictor extends Component {
             .catch(err => {
                 setTimeout(() => {
                     this.checkIfDeviceStopped(id, role, counter + 1);
-                }, 1500)
+                }, 2000)
             });
     }
 

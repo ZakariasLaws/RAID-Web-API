@@ -13,12 +13,14 @@ class Content extends Component {
             predictors: [],
             targets: [],
             sources: [],
+            executionName: 'ADD A NAME'
         };
 
         this.startConstellation = this.startConstellation.bind(this);
         this.stopConstellation = this.stopConstellation.bind(this);
         this.startDevice = this.startDevice.bind(this);
         this.stopDevice = this.stopDevice.bind(this);
+        this.updateExecutionName = this.updateExecutionName.bind(this);
 
         // Ask user if trying to leave the website or refreshing when Constellation is running
         window.onbeforeunload = (e) => {
@@ -30,8 +32,19 @@ class Content extends Component {
         };
     }
 
+    updateExecutionName(e){
+        this.setState({executionName: e.target.value});
+    }
+
     startConstellation(){
-        fetch(`${Utils.CONSTELLATION_URL.start}?binDir=${Utils.CONSTELLATION_BIN_DIR}`)
+        if (this.state.executionName === ''){
+            alert('Choose an execution name');
+            return;
+        }
+
+        const executionName = this.state.executionName.split(' ').join('-').split('/').join('_');
+
+        fetch(`${Utils.CONSTELLATION_URL.start}?binDir=${Utils.CONSTELLATION_BIN_DIR}&executionName=${executionName}`)
             .then(Utils.handleFetchErrors)
             .then(response => response.json())
             .then(response => {
@@ -167,7 +180,7 @@ class Content extends Component {
                     </div>
                     <div className="run-constellation">
                         <div className="server-wrapper">
-                            <ConstellationServer running={this.props.running} startConstellation={this.startConstellation} stopConstellation={this.stopConstellation}/>
+                            <ConstellationServer running={this.props.running} executionName={this.state.executionName} updateExecutionName={this.updateExecutionName} startConstellation={this.startConstellation} stopConstellation={this.stopConstellation}/>
                         </div>
                         <div className="result-wrapper">
                             <div className="result-title-box">
@@ -195,6 +208,9 @@ class ConstellationServer extends Component {
             <div>
                 <h2>Constellation Server</h2>
                 <div>
+                    <div className="constellation-execution-name-wrapper">
+                        <h3><input value={this.props.executionName} onChange={this.props.updateExecutionName}/></h3>
+                    </div>
                     {
                         this.props.running ?
                             <div>
