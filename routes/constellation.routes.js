@@ -68,17 +68,15 @@ router.get('/device/stopped', async (req, res) => {
 });
 
 router.get('/device/result', async (req, res) => {
-   await constellation.getResult(req.query.id)
-       .then(response => {
-           res.json(response)
-       })
-       .catch(err => {
-           if (err.status) {
-               res.status(err.status).json({ message: err.message })
-           } else {
-               res.status(500).json({ message: err.message })
-           }
-       })
+    await constellation.getResult(req, res)
+        .then(response => res.json(response))
+        .catch(err => {
+            if (err.status) {
+                res.status(err.status).json({ message: err.message })
+            } else {
+                res.status(500).json({ message: err.message })
+            }
+        });
 });
 
 // Routes

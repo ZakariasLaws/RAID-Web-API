@@ -17,7 +17,12 @@ let target_processes = {};
 let source_processes = {};
 let predictor_processes = {};
 
-let buffer = [];
+// This should be done with sockets instead
+let bufferSend = [];
+let buffer = []; // Buffer last x second of data, for frontend to be able to use
+let number = 0;
+let dropped = 0;
+const timeInterval = 1000; //ms
 
 /**
  * Sleep for given time
@@ -129,15 +134,39 @@ function stopConstellation() {
     server_process.kill('SIGTERM');
 }
 
+function storeClassification(data) {
+    const time = new Date().getTime();
+
+    // If we reached our timeInterval and buffer has data
+    if (buffer.length > 0 && time > buffer[0].time + timeInterval){
+        if (bufferSend.length !== 0){
+            dropped += 1;
+        }
+        bufferSend = buffer;
+        buffer = [];
+    }
+
+    number += 1;
+
+    buffer.push({
+        model: data.split('model ')[1],
+        classifiedAt: data.split('classified at ')[1].split(' using model')[0],
+        number: number,
+        time: time,
+    });
+}
+
 function startDevice(data){
     return new Promise((resolve, reject) => {
         const scriptLoc = CONSTELLATION_BIN_DIR + "/bin/distributed/remote_execution/start_remote.bash";
 
         let params = [`${data.username}@${data.ip}`, data.role, server_ip, poolName, data.params];
+        let outputFile;
 
         // Add output file to logs
         if (data.role === 't'){
-            params.push('-outputFile ' + require('path').resolve(__dirname, '..') + '/' + logDir + '/targets/' + data.id + '-results.log');
+            outputFile = require('path').resolve(__dirname, '..') + '/' + logDir + '/targets/' + data.id + '-results.log';
+            params.push('-outputFile ' + outputFile);
         }
         let handler;
         let deviceLogDir;
@@ -175,14 +204,19 @@ function startDevice(data){
 
         const role = data.role;
         handler[1].stdout.on('data', (data) => {
-            if (role === 't')
+            if (role === 't') {
                 console.log(`Target stdout: ${data}`);
+                if ('classified at' in `${data}`){ // We received a classification, store it in buffer
+                    storeClassification(`${data}`);
+                }
+            }
             handler[3].write(`${data}`);
         });
 
         handler[1].stderr.on('data', (data) => {
-            if (role === 't')
+            if (role === 't') {
                 console.log(`Target stderr: ${data}`);
+            }
             handler[3].write(`${data}`);
         });
 
@@ -191,6 +225,11 @@ function startDevice(data){
             handler[2] = true;
             handler[3].end();
         });
+
+        // Add the output file if target
+        if (data.role === 't'){
+            handler.push(outputFile);
+        }
 
         resolve();
     });
@@ -261,14 +300,11 @@ function deviceIsStopped(id, role){
     });
 }
 
-/**
- * Only for Target
- * @param id
- */
-function getResult(id){
-    const buf2 = buffer;
-    buffer = [];
-    return buf2;
+function getResult(){
+    return new Promise((resolve, reject) => {
+        resolve(bufferSend);
+        bufferSend = [];
+    });
 }
 
 module.exports = {

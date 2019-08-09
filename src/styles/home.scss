@@ -151,12 +151,9 @@ body {
     background-color: #f9f9f9;
     border-top: 1px solid gray;
 
-    height: 700px;
-
     .server-wrapper {
       height: 100%;
       width: calc(100% / 3);
-      border-right: 5px solid grey;
       display: inline-block;
       vertical-align: top;
 
@@ -172,6 +169,11 @@ body {
       width: calc(calc(100% / 3) * 2);
       height: 100%;
       vertical-align: top;
+      border-left: 5px solid grey;
+
+      .js-plotly-plot {
+        border:2px solid #474747;
+      }
     }
 
     .result-title-box {

@@ -4,6 +4,7 @@ import {Utils} from "./utils";
 import Predictor from "./devices/Predictor";
 import Target from "./devices/Target";
 import Source from "./devices/Source";
+import Plot from 'react-plotly.js';
 
 class Content extends Component {
     constructor(props) {
@@ -182,11 +183,7 @@ class Content extends Component {
                         <div className="server-wrapper">
                             <ConstellationServer running={this.props.running} executionName={this.state.executionName} updateExecutionName={this.updateExecutionName} startConstellation={this.startConstellation} stopConstellation={this.stopConstellation}/>
                         </div>
-                        <div className="result-wrapper">
-                            <div className="result-title-box">
-                                <h2>Result</h2>
-                            </div>
-                        </div>
+                        <Result running={this.props.running}/>
                     </div>
                 </div>
             );
@@ -195,6 +192,130 @@ class Content extends Component {
                 <DeviceManagement />
             );
         }
+    }
+}
+
+class Result extends Component {
+    constructor(props){
+        super(props);
+
+        this.state = {
+            gettingResult: false,
+            figure:{
+                frames: ["START"],
+                predictions: [0],
+                devices: ["START"],
+                device_predictions: [0]
+            },
+            counter: 0,
+        };
+
+        this.getResults = this.getResults.bind(this);
+        this.updatePlotData = this.updatePlotData.bind(this);
+    }
+
+    updatePlotData(response) {
+        // model: data.split('model ')[1],
+        // classifiedAt: data.split('classified at ')[1].split(' using model')[0],
+        // number: number,
+        // time: new Date().getTime(),
+
+        let data = {frames: Array.from(this.state.figure.frames), predictions: Array.from(this.state.figure.predictions), devices: [], device_predictions: []};
+
+        let counter = this.state.counter += 1;
+        data.frames.push(`${counter}`);
+        data.predictions.push(response.length);
+
+        response.sort((first, second) => {
+            return second.classifiedAt - first.classifiedAt;
+        });
+
+        if (data.frames.length > 15) {
+            data.frames.shift();
+            data.predictions.shift();
+        }
+
+        let devices = {};
+        for(let i=0; i<response.length; i++){
+            if (!Object.keys(devices).includes(response[i].classifiedAt)){
+                devices[response[i].classifiedAt] = 1
+            } else {
+                devices[response[i].classifiedAt] += 1;
+            }
+        }
+
+        let items = Object.keys(devices).map(function(key) {
+            return [key, devices[key]];
+        });
+
+        items.sort(function(first, second) {
+            let a = first[0].toUpperCase();
+            let b = second[0].toUpperCase();
+
+            if(a > b){
+                return 1;
+            } else if (b > a) {
+                return -1;
+            }
+            return 0;
+        });
+
+        data.devices = items.map(val => val[0]);
+        data.device_predictions = items.map(val => val[1]);
+
+        this.setState({figure: data, counter: counter});
+    }
+
+    getResults(){
+        if (this.props.running) {
+            fetch(Utils.CONSTELLATION_URL.getResults)
+                .then(Utils.handleFetchErrors)
+                .then(response => response.json())
+                .then(response => {
+                    if (response.length > 0)
+                        this.updatePlotData(response)
+                })
+                .catch(err => {
+                    console.log("Error fetching results " + err);
+                });
+        }
+    }
+
+    loopGetResults(){
+        if (!this.state.gettingResult) {
+            this.setState({gettingResult: true});
+            setInterval(() => {
+                this.getResults();
+            }, 300);
+        }
+    }
+
+    componentDidMount() {
+        this.loopGetResults();
+    }
+
+    render() {
+        return (
+            <div className="result-wrapper">
+                <div className="result-title-box">
+                    <h2>Result</h2>
+                    <div className="Result-content">
+                        <Plot
+                            data={[
+                                {type: 'bar', x: this.state.figure.frames, y: this.state.figure.predictions},
+                            ]}
+                            layout={ {width: 800, height: 500, title: 'Classifications per second'} }
+                        />
+                        <Plot
+                            data={[
+                                {type: 'bar', x: this.state.figure.devices, y: this.state.figure.device_predictions},
+                            ]}
+                            layout={ {width: 800, height: 500, title: 'Classifications per device'} }
+                        />
+                    </div>
+                </div>
+            </div>
+        );
     }
 }
 

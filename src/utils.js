@@ -12,7 +12,8 @@ export const Utils = {
         stop: '/constellation/stop',
         startDevice: '/constellation/device/start',
         stopDevice: '/constellation/device/stop',
-        checkIfStopped: '/constellation/device/stopped'
+        checkIfStopped: '/constellation/device/stopped',
+        getResults: '/constellation/device/result',
     },
     CONSTELLATION_BIN_DIR: "/home/zaklaw01/Projects/odroid-constellation/edgeinference-constellation/build/install/edgeinference-constellation",
     ODROID_BIN_DIR: '/home/odroid/Constellation/edgeinference-constellation/build/install/edgeinference-constellation',
