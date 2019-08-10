@@ -26,5 +26,8 @@ export const Utils = {
         "YOLO",
         "CIFAR10"
     ],
+    socket: {
+        port: 3300
+    },
     handleFetchErrors: handleErrors,
 };

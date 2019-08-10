@@ -153,7 +153,7 @@ body {
 
     .server-wrapper {
       height: 100%;
-      width: calc(100% / 3);
+      width: calc(calc(100% / 3) - 10px);
       display: inline-block;
       vertical-align: top;
 
@@ -170,6 +170,7 @@ body {
       height: 100%;
       vertical-align: top;
       border-left: 5px solid grey;
+      padding-bottom:50px;
 
       .js-plotly-plot {
         border:2px solid #474747;

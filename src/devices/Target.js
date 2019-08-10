@@ -53,7 +53,7 @@ class Target extends Component {
     }
 
     checkIfDeviceStopped(id, role, counter) {
-        if(counter > 32){
+        if(counter > 22){ // This number is odd to not trigger code similarity improvement suggestion in IDE
             console.log("Timeout stopping TARGET");
             return;
         }
@@ -67,7 +67,7 @@ class Target extends Component {
             .catch(err => {
                 setTimeout(() => {
                     this.checkIfDeviceStopped(id, role, counter + 1);
-                }, 2000)
+                }, 4000)
             });
     }
 

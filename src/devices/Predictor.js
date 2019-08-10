@@ -9,7 +9,8 @@ class Predictor extends Component {
         this.state = {
             running: false,
             contexts: '',
-            extraInfoOpen: false
+            extraInfoOpen: false,
+            executors: 1
         };
 
         this.startDevice = this.startDevice.bind(this);
@@ -17,6 +18,7 @@ class Predictor extends Component {
         this.changeDropMenu = this.changeDropMenu.bind(this);
         this.updateContexts = this.updateContexts.bind(this);
         this.checkIfDeviceStopped = this.checkIfDeviceStopped.bind(this);
+        this.updateExecutors = this.updateExecutors.bind(this);
     }
 
     changeDropMenu(val){
@@ -27,6 +29,10 @@ class Predictor extends Component {
         this.setState({contexts: e.target.value});
     }
 
+    updateExecutors(e) {
+        this.setState({executors: e.target.value});
+    }
+
     startDevice(){
         if (!this.props.running){
             alert('Start the server first');
@@ -35,9 +41,7 @@ class Predictor extends Component {
             alert("Select at least one context");
             return;
         }
-        let params = `-context ${this.state.contexts.split(" ").join(',')}`;
-
-        console.log(params);
+        let params = `-context ${this.state.contexts.split(" ").join(',')} -nrExecutors ${this.state.executors}`;
 
         this.props.startDevice(this.props.id, this.props.data.ip, this.props.data.username, this.props.data.password, 'p', params)
             .then(response => {
@@ -60,7 +64,7 @@ class Predictor extends Component {
 
 
     checkIfDeviceStopped(id, role, counter) {
-        if(counter > 33){
+        if(counter > 20){
             console.log("Timeout stopping PREDICTOR");
             return;
         }
@@ -74,7 +78,7 @@ class Predictor extends Component {
             .catch(err => {
                 setTimeout(() => {
                     this.checkIfDeviceStopped(id, role, counter + 1);
-                }, 2000)
+                }, 4000)
             });
     }
 
@@ -100,6 +104,7 @@ class Predictor extends Component {
                     { this.state.extraInfoOpen ? <div>
                         <h5>IP: {this.props.data.ip}</h5>
                         <h5 className="card-title">Contexts: <input value={this.state.contexts} onChange={this.updateContexts}/></h5>
+                        <h5 className="card-title">Executors: <input style={{width:'30px'}} value={this.state.executors} onChange={this.updateExecutors}/></h5>
                     </div> : ''}
                     <div className="card-text">
                         { this.state.running ?  <button className="btn-danger" onClick={this.stopDevice}>STOP</button> :

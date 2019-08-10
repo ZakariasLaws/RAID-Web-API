@@ -98,7 +98,7 @@ class Source extends Component {
     }
 
     checkIfDeviceStopped(id, role, counter) {
-        if(counter > 20){
+        if(counter > 15){
             console.log("Timeout stopping SOURCE");
             return;
         }
@@ -112,7 +112,7 @@ class Source extends Component {
             .catch(err => {
                 setTimeout(() => {
                     this.checkIfDeviceStopped(id, role, counter + 1);
-                }, 2100)
+                }, 4100)
             });
     }
 
