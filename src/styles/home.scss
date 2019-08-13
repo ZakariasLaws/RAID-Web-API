@@ -39,11 +39,11 @@ body {
 
   .elegantshd {
     font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
-    font-size: 3.5rem;
+    font-size: 4rem;
     font-weight: bold;
-    width: 80%;
-    margin-left: 10%;
-    padding: 15px 30px 40px 30px;
+    width: 90%;
+    margin-left: 5%;
+    padding: 35px 30px 40px 30px;
     text-align: center;
     text-transform: uppercase;
     text-rendering: optimizeLegibility;
@@ -52,8 +52,21 @@ body {
   }
 }
 
+.arm-logo {
+  position: absolute;
+  right: 28px;
+  top: 7px;
+  z-index: 0;
+  width: 168px;
+  height: 60px;
+  background-image: url('../../public/images/arm-logo.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 #content {
-  margin-top:10%;
+  position: absolute;
+  top:12%;
   text-align: center;
   width: 86%;
   margin-left: 7%;

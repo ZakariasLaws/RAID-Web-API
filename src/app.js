@@ -41,7 +41,10 @@ class App extends Component {
     render() {
         return (
             <div className="wrapper">
-                <div className="main-title"><h1 className="elegantshd">Resource Aware Inference Distribution</h1></div>
+                <div className="main-title">
+                    <h1 className="elegantshd">Resource Aware Inference Distribution</h1>
+                    <div className="arm-logo"></div>
+                </div>
                 <SideBar content={
                     <Content view={this.state.view} changeView={this.changeView} running={this.state.running} updateRunning={this.updateRunning} socket={socket}/>
                 } changeView={this.changeView}/>

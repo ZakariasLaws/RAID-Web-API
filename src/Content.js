@@ -111,7 +111,6 @@ class Content extends Component {
         });
     }
 
-
     updateDevices(){
         fetch(Utils.API_URL)
             .then(Utils.handleFetchErrors)
@@ -139,8 +138,6 @@ class Content extends Component {
             })
             .catch(error => console.error('Error:', error));
     }
-
-
 
     componentDidMount() {
         this.updateDevices();
