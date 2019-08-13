@@ -15,19 +15,22 @@ export const Utils = {
         checkIfStopped: '/constellation/device/stopped',
         getResults: '/constellation/device/result',
     },
-    CONSTELLATION_BIN_DIR: "/home/zaklaw01/Projects/odroid-constellation/edgeinference-constellation/build/install/edgeinference-constellation",
-    ODROID_BIN_DIR: '/home/odroid/Constellation/edgeinference-constellation/build/install/edgeinference-constellation',
+    CONSTELLATION_BIN_DIR: "/home/zaklaw01/Projects/odroid-constellation/raid-constellation/build/install/raid-constellation",
+    ODROID_BIN_DIR: '/home/odroid/Constellation/raid-constellation/build/install/raid-constellation',
     views: {
         home: 'home',
-        deviceManagement: 'deviceManagement'
+        deviceManagement: 'deviceManagement',
+        logs: 'logs'
     },
     models: [
         "MNIST",
         "YOLO",
-        "CIFAR10"
+        "TINY_YOLO",
+        "CIFAR10",
     ],
     socket: {
         port: 3300
     },
     handleFetchErrors: handleErrors,
+    deviceShutdownTimeout: 60000 // 60 seconds
 };

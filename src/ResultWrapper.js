@@ -3,9 +3,6 @@ import {Utils} from "./utils";
 import Plot from "react-plotly.js";
 import { Navbar, Nav, NavItem, NavDropdown, Form, Button } from "react-bootstrap";
 
-const io = require('socket.io-client');
-const socket = io.connect('http://localhost:' + Utils.socket.port);
-
 class ResultWrapper extends Component {
     constructor(props){
         super(props);
@@ -83,17 +80,13 @@ class ResultWrapper extends Component {
     }
 
     setupSocket() {
-        socket.emit('setup', 'Hello from client2');
+        this.props.socket.emit('setup', 'Hello from client2');
 
-        socket.on('data', data =>{
+        this.props.socket.on('data', data =>{
             this.updatePlotData(data);
         });
 
-        socket.on('predictor_error', data => {
-           this.props.predictorError(data);
-        });
-
-        socket.on('error', (err) => {
+        this.props.socket.on('error', (err) => {
             console.log('received socket error:');
             console.log(err)
         });
@@ -101,12 +94,16 @@ class ResultWrapper extends Component {
 
     refreshLoadBalance() {;
         let data = this.state.figure;
-        data.data = {};
+        data.data = {
+                frames: ["0"],
+                predictions: [0],
+                models :[],
+                data: {}
+        };
         this.setState({figure: data});
     }
 
     changePlot(val){
-        console.log('changing plot to ' + val);
         this.setState({plot: val});
     }
 
@@ -133,7 +130,7 @@ class ResultWrapper extends Component {
                             <Nav className="mr-auto">
                                 <Nav.Link onClick={() => this.changePlot('Throughput')}><span style={this.state.plot === 'Throughput' ? { fontWeight:'bold', textDecorationLine: 'underline' } : {}}>Throughput</span></Nav.Link>
                                 {/*<Nav.Link onClick={() => this.changePlot('Load Balance')}><span style={this.state.plot === 'Load Balance' ? { fontWeight:'bold', textDecorationLine: 'underline' } : {}}>Load Balance</span></Nav.Link>*/}
-                                <NavDropdown title="Load Balance" id="basic-nav-dropdown">
+                                <NavDropdown title="Data Distribution" id="basic-nav-dropdown">
                                     <NavDropdown.Item onClick={() => this.changePlot('Load Balance - All')}>All</NavDropdown.Item>
                                     {
                                         this.state.figure.models.map((val, key) =>{

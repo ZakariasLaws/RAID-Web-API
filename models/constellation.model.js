@@ -3,7 +3,7 @@ let node_ssh = require('node-ssh');
 const { spawn } = require('child_process');
 
 const poolName = "pool.name";
-const CONSTELLATION_BIN_DIR = "/home/zaklaw01/Projects/odroid-constellation/edgeinference-constellation/build/install/edgeinference-constellation";
+const CONSTELLATION_BIN_DIR = "/home/zaklaw01/Projects/odroid-constellation/raid-constellation/build/install/raid-constellation";
 
 // Directory ame used for logging
 let logDir;
@@ -89,7 +89,6 @@ function startConstellation(binDir, executionName) {
             }
 
             const serverUrl = binDir + "/bin/distributed/constellation-server";
-            const configUrl = binDir + "/config.RAID";
 
             // Create log directory
             let date = new Date();
@@ -103,13 +102,13 @@ function startConstellation(binDir, executionName) {
                 logDir = logDir + '/' + executionName;
                 fs.mkdirSync(logDir);
             } else {
-                recursiveCreateFileName(executionName, 1); // Recursively look for an available name
+                logDir = recursiveCreateFileName(executionName, 1); // Recursively look for an available name
             }
 
             server_wstream = fs.createWriteStream(logDir + '/constellation-server.log');
 
             // Start process
-            server_process = spawn(serverUrl, [configUrl]);
+            server_process = spawn(serverUrl);
 
             server_process.stdout.on('data', (data) => {
                 // console.log(`stdout: ${data}`);
@@ -170,20 +169,45 @@ function sendResultsToClient(){
             data: model_per_device, // {Odroid-1:{MNIST: 2, YOLO:5}, Odroid-2: {MNIST:5, YOLO:7}} etc
         };
 
-        values = {
-            length: 2,
-            data: {
-                O1: {MNIST: 1, YOLO: 4},
-                O2: {MNIST: 2, YOLO: 2},
-                O3: {MNIST: 8, YOLO: 6}
-            }
-        };
+        // values = {
+        //     length: 2,
+        //     data: {
+        //         O1: {MNIST: 1, YOLO: 4},
+        //         O2: {MNIST: 2, YOLO: 2},
+        //         O3: {MNIST: 8, YOLO: 6}
+        //     }
+        // };
 
         console.log("Transmitting " + values.length + " results to client");
 
         client.emit('data', values);
         buffer = [];
     }
+}
+
+function streamClassification(data) {
+    const time = new Date().getTime();
+    number +=1;
+
+    let model = data.split('model ')[1].split('=')[0];
+    let tmp = model.split(':');
+    if (tmp.length > 1){
+        model = tmp[0];
+    }
+
+    let id = data.split('=')[1];
+    let deviceName = `${data.split('classified at ')[1].split(' using model')[0]}-${id}`;
+    let deviceName_allThreads = `${deviceName.split(":")[0]}-${deviceName.split(":")[1]}`;
+
+    let values = {
+        model: model.split('\n')[0],
+        classifiedAt: deviceName_allThreads,
+        number: number,
+        time: time,
+        id: data.split('=')[1]
+    };
+
+    buffer.push(values);
 }
 
 function stopConstellation() {
@@ -208,37 +232,19 @@ function stopConstellation() {
     }
 }
 
-function streamClassification(data) {
-    const time = new Date().getTime();
-    number +=1;
-
-    let model = data.split('model ')[1];
-    let tmp = model.split(':');
-    if (tmp.length > 1){
-        model = tmp[0];
-    }
-
-    let values = {
-        model: model,
-        classifiedAt: data.split('classified at ')[1].split(' using model')[0],
-        number: number,
-        time: time,
-    };
-
-    buffer.push(values);
-}
-
 function startDevice(data){
     return new Promise((resolve, reject) => {
         const scriptLoc = CONSTELLATION_BIN_DIR + "/bin/distributed/remote_execution/start_remote.bash";
 
         let params = [`${data.username}@${data.ip}`, data.role, server_ip, poolName, data.params];
-        let outputFile;
+        let outputFile, profileOutput;
 
         // Add output file to logs
         if (data.role === 't'){
             outputFile = require('path').resolve(__dirname, '..') + '/' + logDir + '/targets/' + data.id + '-results.log';
-            params.push('-outputFile ' + outputFile);
+            profileOutput = require('path').resolve(__dirname, '..') + '/' + logDir + '/targets/' + data.id + '-gantt';
+            params.push(`-outputFile ${outputFile}`);
+            params.push(`-profileOutput ${profileOutput}`)
         }
         let handler;
         let deviceLogDir;
@@ -274,12 +280,22 @@ function startDevice(data){
                 return;
         }
 
-        const role = data.role, id = data.id;
+
+        const role = data.role;
+        const id = data.id;
         handler[1].stdout.on('data', (data) => {
             if (role === 't') {
                 if (`${data}`.includes('classified at')){
                     // console.log('Target ' + id + " got result!");
-                    streamClassification(`${data}`);
+                    streamClassification(`${data}=${id}`);
+                }
+            } else if (role === 'p'){
+                if (`${data}`.includes('Starting Predictor') ){
+                    client.emit(`predictor_started-${id}`, {id: id})
+                } else if (`${data}`.includes('Starting Source') ){
+                    client.emit(`source_started-${id}`, {id: id})
+                } else if (`${data}`.includes('Starting Target') ){
+                    client.emit(`target_started-${id}`, {id: id})
                 }
             }
             handler[3].write(`${data}`);
@@ -299,7 +315,13 @@ function startDevice(data){
             console.log(`child process exited with code ${code}`);
             handler[2] = true;
             handler[3].end();
-            client.emit('predictor_error', {id: data.id, code: code});
+            if (role === 'p'){
+                client.emit(`predictor_closed-${id}`, {id: id, code: code});
+            } else if (role === 's') {
+                client.emit(`source_closed-${id}`, {id: id, code: code});
+            } else if (role === 't') {
+                client.emit(`target_closed-${id}`, {id: id, code: code});
+            }
         });
 
         // Add the output file if target
@@ -385,6 +407,11 @@ function clientDisconnect(){
     client = null;
 
     stopConstellation();
+    // Stop all currently running instances (if there are any)
+    // Safety net if the stopConstellation method failed
+    const params = ['-9', "`ps aux | grep 'constellation' | grep -v 'grep' | awk '{print $2}'`"];
+
+    let child = spawn('kill', params);
 }
 
 module.exports = {

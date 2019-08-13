@@ -22,7 +22,6 @@ class Content extends Component {
         this.startDevice = this.startDevice.bind(this);
         this.stopDevice = this.stopDevice.bind(this);
         this.updateExecutionName = this.updateExecutionName.bind(this);
-        this.predictorError = this.predictorError.bind(this);
 
         // Ask user if trying to leave the website or refreshing when Constellation is running
         window.onbeforeunload = (e) => {
@@ -141,13 +140,7 @@ class Content extends Component {
             .catch(error => console.error('Error:', error));
     }
 
-    predictorError(data) {
-        let id = data.id;
-        let code = data.code;
 
-        alert('PREDICTOR ERROR FOR ID: ' + id + "\nERROR CODE: " + code);
-        //TODO Notify Predictor that it's been shutdown
-    };
 
     componentDidMount() {
         this.updateDevices();
@@ -164,8 +157,7 @@ class Content extends Component {
     }
 
     render() {
-        if (this.props.view === 'home') {
-
+        if (this.props.view === Utils.views.home) {
             let targets = this.state.targets.map(val => val.title);
 
             return (
@@ -173,30 +165,30 @@ class Content extends Component {
                     <div className="device">
                         <h2> Sources </h2>
                         <div className="deviceContent deviceSource">
-                            { this.state.sources.map((source, key) => <Source data={source} key={key} id={key} running={this.props.running} startDevice={this.startDevice} stopDevice={this.stopDevice} targets={targets}/> ) }
+                            { this.state.sources.map((source, key) => <Source data={source} key={key} id={key} running={this.props.running} startDevice={this.startDevice} stopDevice={this.stopDevice} targets={targets} socket={this.props.socket}/> ) }
                         </div>
                     </div>
                     <div className="device">
                         <h2> Targets </h2>
                         <div className="deviceContent deviceTarget">
-                            { this.state.targets.map((target, key) => <Target data={target} key={key} id={key} running={this.props.running} startDevice={this.startDevice} stopDevice={this.stopDevice}/> ) }
+                            { this.state.targets.map((target, key) => <Target data={target} key={key} id={key} running={this.props.running} startDevice={this.startDevice} stopDevice={this.stopDevice} socket={this.props.socket}/> ) }
                         </div>
                     </div>
                     <div className="device last-device">
                         <h2> Predictors </h2>
                         <div className="deviceContent devicePredictor">
-                            { this.state.predictors.map((predictor, key) => <Predictor data={predictor} id={key}  key={key} running={this.props.running} startDevice={this.startDevice} stopDevice={this.stopDevice}/> ) }
+                            { this.state.predictors.map((predictor, key) => <Predictor data={predictor} id={key}  key={key} running={this.props.running} startDevice={this.startDevice} stopDevice={this.stopDevice} socket={this.props.socket}/> ) }
                         </div>
                     </div>
                     <div className="run-constellation">
                         <div className="server-wrapper">
-                            <ConstellationServer running={this.props.running} executionName={this.state.executionName} updateExecutionName={this.updateExecutionName} startConstellation={this.startConstellation} stopConstellation={this.stopConstellation}/>
+                            <ConstellationServer running={this.props.running} executionName={this.state.executionName} updateExecutionName={this.updateExecutionName} startConstellation={this.startConstellation} stopConstellation={this.stopConstellation} socket={this.props.socket}/>
                         </div>
-                        <ResultWrapper running={this.props.running} predictorError={this.predictorError}/>
+                        <ResultWrapper running={this.props.running} socket={this.props.socket}/>
                     </div>
                 </div>
             );
-        } else {
+        } else if (this.props.view === Utils.views.deviceManagement) {
             return (
                 <DeviceManagement />
             );
@@ -212,7 +204,7 @@ class ConstellationServer extends Component {
     render(){
         return (
             <div>
-                <h2>Constellation Server</h2>
+                <h2>RAID - Server</h2>
                 <div>
                     <div className="constellation-execution-name-wrapper">
                         <h3><input value={this.props.executionName} onChange={this.props.updateExecutionName}/></h3>

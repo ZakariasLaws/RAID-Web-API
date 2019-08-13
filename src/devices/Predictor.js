@@ -10,15 +10,17 @@ class Predictor extends Component {
             running: false,
             contexts: '',
             extraInfoOpen: false,
-            executors: 1
+            executors: 1,
+            starting: false,
+            stopping: false
         };
 
         this.startDevice = this.startDevice.bind(this);
         this.stopDevice = this.stopDevice.bind(this);
         this.changeDropMenu = this.changeDropMenu.bind(this);
         this.updateContexts = this.updateContexts.bind(this);
-        this.checkIfDeviceStopped = this.checkIfDeviceStopped.bind(this);
         this.updateExecutors = this.updateExecutors.bind(this);
+        this.predictorClosed = this.predictorClosed.bind(this);
     }
 
     changeDropMenu(val){
@@ -45,7 +47,7 @@ class Predictor extends Component {
 
         this.props.startDevice(this.props.id, this.props.data.ip, this.props.data.username, this.props.data.password, 'p', params)
             .then(response => {
-                this.setState({running: true});
+                this.setState({starting: true, stopping: false, running: false});
             })
             .catch(err => {
                 console.log(err);
@@ -53,38 +55,63 @@ class Predictor extends Component {
     }
 
     stopDevice(){
+        this.setState({running: false, starting: false, stopping: true});
         this.props.stopDevice(this.props.id, 'p')
             .then(response => {
-                this.checkIfDeviceStopped(this.props.id, 'p', 0);
+               setTimeout(() => {
+                   if (this.state.stopping || this.state.running) {
+                       console.log("TIMEOUT shutting down PREDICTOR");
+                       // Double check
+                       fetch(`${Utils.CONSTELLATION_URL.checkIfStopped}?role=p&id=${this.props.id}`)
+                           .then(Utils.handleFetchErrors)
+                           .then(response => {
+                               console.log("PREDICTOR DEVICE IS ALREADY STOPPED");
+                               this.setState({running: false, stopping: false, starting: false});
+                           })
+                           .catch(err => {
+                               console.log("PREDICTOR is really not stopped: " + err);
+                           });
+                   }
+                }, Utils.deviceShutdownTimeout);
             })
             .catch(response => {
                 console.log(response);
             });
     }
 
-
-    checkIfDeviceStopped(id, role, counter) {
-        if(counter > 20){
-            console.log("Timeout stopping PREDICTOR");
+    predictorClosed(data) {
+        let id = data.id;
+        let code = data.code;
+        if (data.id !== this.props.id) {
             return;
         }
 
-        fetch(`${Utils.CONSTELLATION_URL.checkIfStopped}?role=${role}&id=${id}`)
-            .then(Utils.handleFetchErrors)
-            .then(response => {
-                console.log("PREDICTOR DEVICE IS STOPPED");
-                this.setState({running: false});
-            })
-            .catch(err => {
-                setTimeout(() => {
-                    this.checkIfDeviceStopped(id, role, counter + 1);
-                }, 4000)
-            });
+        if (code === 130 || code === 137) {
+            console.log("PREDICTOR DEVICE with id " + this.props.id + " IS STOPPED ");
+            this.setState({running: false, starting: false, stopping: false});
+        } else {
+            console.log("Shutdown PREDICTOR failed with response " + JSON.stringify(data));
+            this.setState({running: false, starting: false, stopping: false});
+        }
+    };
+
+    componentDidMount() {
+        // Setup socket
+        let sockedClosed = `predictor_closed-${this.props.id}`;
+        this.props.socket.on(`predictor_closed-${this.props.id}`, data => {
+            this.predictorClosed(data);
+        });
+
+        this.props.socket.on(`predictor_started-${this.props.id}`, data => {
+            if (data.id === this.props.id) {
+                this.setState({running: true, starting: false, stopping: false});
+            }
+        });
     }
 
     render() {
         // Make sure to stop if server is stopped
-        if (!this.props.running && this.state.running) {
+        if (!this.props.running && this.state.running && !this.state.stopping) {
             this.stopDevice();
         }
 
@@ -98,7 +125,14 @@ class Predictor extends Component {
                     { this.state.running ?
                         <div className="device-spinner spinner-border text-danger" role="status">
                             <span className="sr-only">Loading...</span>
-                        </div> : '' }
+                        </div> : this.state.starting ?
+                        <div className="device-spinner spinner-border text-warning" role="status">
+                            <span className="sr-only"> Loading...</span>
+                        </div> : this.state.stopping ?
+                        <div className="device-spinner spinner-border text-warning" role="status">
+                            <span className="sr-only"> Loading...</span>
+                        </div> : ''
+                    }
                 </div>
                 <div className="card-body">
                     { this.state.extraInfoOpen ? <div>
@@ -107,8 +141,20 @@ class Predictor extends Component {
                         <h5 className="card-title">Executors: <input style={{width:'30px'}} value={this.state.executors} onChange={this.updateExecutors}/></h5>
                     </div> : ''}
                     <div className="card-text">
-                        { this.state.running ?  <button className="btn-danger" onClick={this.stopDevice}>STOP</button> :
-                            <button className="btn-primary" onClick={this.startDevice}>START</button> }
+                        { this.state.running ?
+                            <button className="btn-danger" onClick={this.stopDevice}>
+                                STOP
+                            </button> : this.state.stopping ?
+                            <button className="btn-warning" onClick={() =>{}}>
+                                STOPPING
+                            </button> : this.state.starting ?
+                            <button className="btn-warning" onClick={() =>{}}>
+                                STARTING
+                            </button> :
+                            <button className="btn-primary" onClick={this.startDevice}>
+                                START
+                            </button>
+                        }
                     </div>
                 </div>
             </div>

@@ -6,6 +6,9 @@ import SideBar from "./sidebar"
 import Content from "./Content";
 import {Utils} from "./utils";
 
+const io = require('socket.io-client');
+const socket = io.connect('http://localhost:' + Utils.socket.port);
+
 class App extends Component {
     constructor(props) {
         super(props);
@@ -39,7 +42,9 @@ class App extends Component {
         return (
             <div className="wrapper">
                 <div className="main-title"><h1 className="elegantshd">Resource Aware Inference Distribution</h1></div>
-                <SideBar content={<Content view={this.state.view} changeView={this.changeView} running={this.state.running} updateRunning={this.updateRunning}/>} changeView={this.changeView}/>
+                <SideBar content={
+                    <Content view={this.state.view} changeView={this.changeView} running={this.state.running} updateRunning={this.updateRunning} socket={socket}/>
+                } changeView={this.changeView}/>
             </div>
         )
     }
