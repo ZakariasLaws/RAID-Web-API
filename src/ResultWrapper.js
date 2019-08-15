@@ -97,7 +97,7 @@ class ResultWrapper extends Component {
 
     refreshLoadBalance() {;
         let data = this.state.figure;
-        data.data = {
+        data = {
                 frames: ["0"],
                 predictions: [0],
                 models :[],
