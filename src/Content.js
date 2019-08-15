@@ -181,7 +181,7 @@ class Content extends Component {
                         <div className="server-wrapper">
                             <ConstellationServer running={this.props.running} executionName={this.state.executionName} updateExecutionName={this.updateExecutionName} startConstellation={this.startConstellation} stopConstellation={this.stopConstellation} socket={this.props.socket}/>
                         </div>
-                        <ResultWrapper running={this.props.running} socket={this.props.socket}/>
+                        <ResultWrapper running={this.props.running} socket={this.props.socket} stopConstellation={this.stopConstellation}/>
                     </div>
                 </div>
             );

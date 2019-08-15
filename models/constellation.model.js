@@ -230,6 +230,10 @@ function stopConstellation() {
             killDevices(target_processes[id], 'TARGET', '-9');
         });
     }
+
+    predictor_processes = []
+    source_processes = []
+    target_processes = []
 }
 
 function startDevice(data){
@@ -284,11 +288,17 @@ function startDevice(data){
         const role = data.role;
         const id = data.id;
         handler[1].stdout.on('data', (data) => {
+            if (`${data}`.includes("ERROR")){
+                client.emit("ERROR", {data: `${data}`, id: id});
+                console.log(`${data}`);
+            }
+
             if (role === 't') {
-                if (`${data}`.includes('classified at')){
-                    // console.log('Target ' + id + " got result!");
-                    streamClassification(`${data}=${id}`);
-                }
+                `${data}`.split('\n').forEach(val => {
+                    if (`${val}`.includes('classified at')) {
+                        streamClassification(`${val}=${id}`);
+                    }
+                });
             } else if (role === 'p'){
                 if (`${data}`.includes('Starting Predictor') ){
                     client.emit(`predictor_started-${id}`, {id: id})
@@ -298,6 +308,7 @@ function startDevice(data){
                     client.emit(`target_started-${id}`, {id: id})
                 }
             }
+
             handler[3].write(`${data}`);
         });
 

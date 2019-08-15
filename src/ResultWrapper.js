@@ -9,7 +9,6 @@ class ResultWrapper extends Component {
 
         this.state = {
             gettingResult: false,
-            results: [],
             figure:{
                 frames: ["START"],
                 predictions: [0],
@@ -86,6 +85,10 @@ class ResultWrapper extends Component {
             this.updatePlotData(data);
         });
 
+        this.props.socket.on('ERROR', data => {
+            this.props.stopConstellation();
+        });
+
         this.props.socket.on('error', (err) => {
             console.log('received socket error:');
             console.log(err)
@@ -109,6 +112,23 @@ class ResultWrapper extends Component {
 
     componentDidMount() {
         this.setupSocket();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.running && !this.props.running){
+            // Instance just stopped
+            this.setState({
+                figure:{
+                    frames: ["START"],
+                    predictions: [0],
+                    // devices: [],
+                    // device_predictions: [],
+                    models :[],
+                    data: {}
+                },
+                counter: 0,
+            });
+        }
     }
 
     render() {
@@ -159,7 +179,17 @@ class ResultWrapper extends Component {
                                 data={[
                                     {type: 'bar', x: this.state.figure.frames, y: this.state.figure.predictions},
                                 ]}
-                                layout={{width: 700, height: 400, title: 'Classifications Per Second'}}
+                                layout={{
+                                    width: 700, height: 400, title: 'Classifications Per Second',
+                                    xaxis: {
+                                        visible: true,
+                                        title: "Seconds",
+                                    },
+                                    yaxis: {
+                                        visible: true,
+                                        title: "Classifications"
+                                    }
+                                }}
                             /> : ''
                         }
 
@@ -175,7 +205,17 @@ class ResultWrapper extends Component {
                                             {type: 'bar', x: devices.map(device => device[0]), y:  devices.map(device => device[1])},
                                         ]}
                                         key={key}
-                                        layout={{width: 700, height: 400, title: `Classificatons Per Device - ${val}`}}
+                                        layout={{
+                                            width: 700, height: 400, title: `Classificatons Per Device - ${val}`,
+                                            xaxis: {
+                                                visible: true,
+                                                title: "Devices",
+                                            },
+                                            yaxis: {
+                                                visible: true,
+                                                title: "Classifications"
+                                            }
+                                        }}
                                     />
                                 }
                             })
@@ -187,7 +227,17 @@ class ResultWrapper extends Component {
                                 data={[
                                     {type: 'bar', x: load_balance_all_devices.map(device => device[0]), y: load_balance_all_devices.map(device => device[1])},
                                 ]}
-                                layout={{width: 700, height: 400, title: 'Classifications per device - All'}}
+                                layout={{
+                                    width: 700, height: 400, title: 'Classifications per device - All',
+                                    xaxis: {
+                                        visible: true,
+                                        title: "Devices",
+                                    },
+                                    yaxis: {
+                                        visible: true,
+                                        title: "Classifications"
+                                    }
+                                }}
                                 /> : ''
                         }
                     </div>
