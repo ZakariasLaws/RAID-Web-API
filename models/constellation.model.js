@@ -127,7 +127,12 @@ function startConstellation(binDir, executionName) {
                 let info = data2.split("Known hubs now: ")[1].split("#")[0];
 
                 server_port = info.split("-")[1];
-                server_ip = info.split("-")[0].split("/")[1];
+                let tmp = info.split("-")[0].split('/');
+                if (tmp.length > 1){
+                    server_ip = tmp[1];
+                } else {
+                    server_ip = tmp[0];
+                }
             });
 
             server_process.on('close', (code) => {

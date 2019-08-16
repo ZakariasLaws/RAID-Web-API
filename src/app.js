@@ -42,7 +42,7 @@ class App extends Component {
         return (
             <div className="wrapper">
                 <div className="main-title">
-                    <h1 className="elegantshd">Resource Aware Inference Distribution</h1>
+                    <h1 className="elegantshd"><span className="first-letter">R</span>esource <span className="first-letter">A</span>ware <span className="first-letter">I</span>nference <span className="first-letter">D</span>istribution</h1>
                     <div className="arm-logo"></div>
                 </div>
                 <SideBar content={

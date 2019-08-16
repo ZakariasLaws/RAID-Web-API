@@ -158,7 +158,7 @@ class Source extends Component {
                         <button className="drop-down-button btn-dark" onClick={() => this.changeDropMenu(true)}> <FontAwesomeIcon icon="angle-right"/> </button> }
                     {this.props.data.title}
                     { this.state.running ?
-                        <div className="device-spinner spinner-border text-danger" role="status">
+                        <div className="device-spinner spinner-border text-success" role="status">
                             <span className="sr-only">Loading...</span>
                         </div> : this.state.starting ?
                             <div className="device-spinner spinner-border text-warning" role="status">
@@ -211,7 +211,7 @@ class Source extends Component {
                                     <button className="btn-warning" onClick={() =>{}}>
                                         STARTING
                                     </button> :
-                                    <button className="btn-primary" onClick={this.startDevice}>
+                                    <button className="btn-success" onClick={this.startDevice}>
                                         START
                                     </button>
                         }

@@ -115,7 +115,7 @@ class ResultWrapper extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.running && !this.props.running){
+        if (prevProps.running && !this.props.running && prevState.figure.frames.length > 1){
             // Instance just stopped
             this.setState({
                 figure:{

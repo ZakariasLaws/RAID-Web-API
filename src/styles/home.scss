@@ -49,24 +49,30 @@ body {
     text-rendering: optimizeLegibility;
     color: rgba(0,0,0,0.6);
     text-shadow: 2px 8px 6px rgba(0,0,0,0.2), 0px -5px 35px rgba(255,255,255,0.3);
-  }
-}
 
-.arm-logo {
-  position: absolute;
-  right: 28px;
-  top: 7px;
-  z-index: 0;
-  width: 168px;
-  height: 60px;
-  background-image: url('../../public/images/arm-logo.png');
-  background-repeat: no-repeat;
-  background-size: cover;
+    .first-letter{
+      color: #037afc;
+      font-size: 120%;
+      font-style: italic;
+    }
+  }
+
+  .arm-logo {
+    position: absolute;
+    right: 28px;
+    top: 7px;
+    z-index: 0;
+    width: 150px;
+    height: 50px;
+    background-image: url('../../public/images/arm-logo.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
 }
 
 #content {
   position: absolute;
-  top:12%;
+  top:14%;
   text-align: center;
   width: 86%;
   margin-left: 7%;
