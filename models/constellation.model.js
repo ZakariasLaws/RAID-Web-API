@@ -236,9 +236,9 @@ function stopConstellation() {
         });
     }
 
-    predictor_processes = []
-    source_processes = []
-    target_processes = []
+    predictor_processes = [];
+    source_processes = [];
+    target_processes = [];
 }
 
 function startDevice(data){

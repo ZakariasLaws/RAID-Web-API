@@ -49,7 +49,6 @@ class DeviceManagement extends Component {
         }) : "";
         return (
             <div className="deviceManagement-wrapper" >
-                <div className="main-title"><h1 className="elegantshd">Device Management</h1></div>
                 <div className="deviceManagement-form-wrapper">
                     <h2> Add new device </h2>
                     <div className="addDeviceForm">

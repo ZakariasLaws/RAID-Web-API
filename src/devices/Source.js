@@ -16,7 +16,10 @@ class Source extends Component {
             targetName: 'SELECT TARGET',
             extraInfoOpen: false,
             starting: false,
-            stopping: false
+            stopping: false,
+            timeInterval: 100,
+            endless: false,
+            batchCount: 100,
         };
 
         this.startDevice = this.startDevice.bind(this);
@@ -28,7 +31,9 @@ class Source extends Component {
         this.sourceClosed = this.sourceClosed.bind(this);
         this.updateContexts = this.updateContexts.bind(this);
         this.updateSourceDir = this.updateSourceDir.bind(this);
-
+        this.updateTimeInterval = this.updateTimeInterval.bind(this);
+        this.updateBatchCount = this.updateBatchCount.bind(this);
+        this.updateEndless = this.updateEndless.bind(this);
     }
 
     changeDropMenu(val){
@@ -36,6 +41,10 @@ class Source extends Component {
     }
 
     updateBatchSize(e) {
+        if (isNaN(e.target.value))
+            return;
+        if (e.target.value < 1 || e.target.value % 1 !== 0)
+            return;
         this.setState({batchSize: e.target.value});
     }
 
@@ -53,6 +62,27 @@ class Source extends Component {
 
     updateSourceDir(e) {
         this.setState({sourceDir: e.target.value});
+    }
+
+    updateTimeInterval(e) {
+        if (isNaN(e.target.value))
+            return;
+        if (e.target.value < 0.5 || e.target.value > 10000)
+            return;
+
+        this.setState({timeInterval: e.target.value});
+    }
+
+    updateEndless(value) {
+        this.setState({endless: value});
+    }
+
+    updateBatchCount(e) {
+        if (isNaN(e.target.value))
+            return;
+        if (e.target.value < 1 || e.target.value % 1 !== 0)
+            return;
+        this.setState({batchCount: e.target.value});
     }
 
     startDevice(){
@@ -78,7 +108,7 @@ class Source extends Component {
 
         let contexts = this.state.contexts.split(" ").join(',');
         // ./bin/distributed/run.bash s 10.72.154.139 pool.name A -target 0:1:0 -dataDir /home/zaklaw01/Desktop/coco/test2017/ -modelName yolo -batchSize 2
-        let params = `-context ${contexts} -batchSize ${this.state.batchSize} -dataDir ${this.state.sourceDir} -modelName ${this.state.modelName} -target 0:1:0`;
+        let params = `-context ${contexts} -batchSize ${this.state.batchSize} -dataDir ${this.state.sourceDir} -modelName ${this.state.modelName} -target 0:1:0 -endless ${this.state.endless} -batchCount ${this.state.batchCount} -timeInterval ${this.state.timeInterval}`;
 
         this.props.startDevice(this.props.id, this.props.data.ip, this.props.data.username, this.props.data.password, 's', params)
             .then(response => {
@@ -173,8 +203,23 @@ class Source extends Component {
                     { this.state.extraInfoOpen ? <div>
                         <h5>IP: {this.props.data.ip}</h5>
                         <h5 className="card-title">Contexts: <input value={this.state.contexts} onChange={this.updateContexts}/></h5>
-                        <h5 className="card-title">Batch Size: <input value={this.state.batchSize} onChange={this.updateBatchSize}/></h5>
                         <h5 className="card-title">Source Directory: <input value={this.state.sourceDir} onChange={this.updateSourceDir}/></h5>
+                        <h5 className="card-title">Time Between Batches: <input value={this.state.timeInterval} onChange={this.updateTimeInterval}/></h5>
+                        <h5 className="card-title">Batch Size: <input value={this.state.batchSize} onChange={this.updateBatchSize}/></h5>
+                        {
+                            !this.state.endless ?
+                                <h5 className="card-title" >Batches: <input value={this.state.batchCount} onChange={this.updateBatchCount}/></h5> : ''
+                        }
+                        <Dropdown>
+                            <Dropdown.Toggle variant="info" id="dropdown-basic">
+                                <span className="dropdown-label">Endless: {this.state.endless.toString().toUpperCase()}</span>
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => this.updateEndless(true)} >True</Dropdown.Item>
+                                <Dropdown.Item onClick={() => this.updateEndless(false)} >False</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+
                         <Dropdown>
                             <Dropdown.Toggle variant="info" id="dropdown-basic">
                                 <span className="dropdown-label">{this.state.modelName}</span>

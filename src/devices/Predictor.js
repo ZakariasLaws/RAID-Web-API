@@ -86,7 +86,7 @@ class Predictor extends Component {
             return;
         }
 
-        if (code === 130 || code === 137) {
+        if (code === 130 || code === 137 || code === 255) {
             console.log("PREDICTOR DEVICE with id " + this.props.id + " IS STOPPED ");
             this.setState({running: false, starting: false, stopping: false});
         } else {

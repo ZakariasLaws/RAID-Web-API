@@ -12,7 +12,7 @@ export default observer(({ form }) => (
         <SimpleInput field={form.$('role')} />
         <SimpleInput field={form.$('ip')} />
         <SimpleInput field={form.$('username')} />
-        <SimpleInput type="password" field={form.$('password')} />
+        {/*<SimpleInput type="password" field={form.$('password')} />*/}
         {/*<SimpleInput field={form.$('contexts')} />*/}
         {/*<SimpleInput field={form.$('target')} />*/}
         {/*<SimpleInput field={form.$('modelName')} />*/}
@@ -20,6 +20,7 @@ export default observer(({ form }) => (
         {/*<SimpleInput field={form.$('dataDir')} />*/}
 
         <br />
+            <p>In order to connect to remote devices, make sure you have exchanged SSH keys to allow for remote connection without supplying a password</p>
         <button type="submit" className={$btn} onClick={form.onSubmit}>Submit</button>
         <button type="button" className={$btn} onClick={form.onClear}>Clear</button>
         <button type="button" className={$btn} onClick={form.onReset}>Reset</button>
