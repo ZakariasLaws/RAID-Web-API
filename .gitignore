@@ -93,4 +93,4 @@ Temporary Items
 .apdisk
 
 # Database directory
-database
+database/*

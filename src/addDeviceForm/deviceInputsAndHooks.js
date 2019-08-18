@@ -71,12 +71,6 @@ const fields = [
         label: "Username of device (for remote command execution)",
         placeholder: "odroid",
         rules: "string|min:1|required"
-    },
-    {
-        name: "password",
-        label: "Password of device (for remote command execution)",
-        placeholder: "",
-        rules: "string|min:1|required"
     }
 ];
 
@@ -93,7 +87,7 @@ const hooks = {
         })
             .then(Utils.handleFetchErrors)
             .then(result => {
-            console.log(JSON.stringify(result));
+            // console.log(JSON.stringify(result));
 
         }).catch(response => {
             console.log(response);

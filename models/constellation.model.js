@@ -1,6 +1,7 @@
 let fs = require('fs');
 let node_ssh = require('node-ssh');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
+const os = require('os');
 
 const poolName = "pool.name";
 const CONSTELLATION_BIN_DIR = "/home/zaklaw01/Projects/odroid-constellation/raid-constellation/build/install/raid-constellation";
@@ -51,8 +52,17 @@ function killDevices(device, role, type){
     console.log("Stopping " + device[0] + " " + role);
 
     return new Promise((resolve, reject) => {
-        const params = ['-tt', device[0], 'kill', type, "`ps aux | grep '" + role + "' | grep -v 'grep' | awk '{print $2}'`"];
+        if (os.hostname() === device[0].split('@')[0] || os.userInfo().username === device[0].split('@')[0]) {
+            // Running locally
+            const cmdString = "kill " + type + " `ps aux | grep '" + role + "' | grep -v 'grep' | awk '{print $2}'`";
+            exec(cmdString, (err, stdout, stderr) => {
+                // console.log(err + " " + stdout + " " + stderr);
+            });
+            resolve();
+            return;
+        }
 
+        const params = ['-tt', device[0], 'kill', type, "`ps aux | grep '" + role + "' | grep -v 'grep' | awk '{print $2}'`"];
         let child = spawn('ssh', params);
 
         child.stdout.on('data', (data) => {
@@ -223,15 +233,15 @@ function stopConstellation() {
         server_process = null;
 
         // Shutdown all remaining devices
-        Object.keys(predictor_processes).forEach(id => {
+        Object.keys(predictor_processes).filter(val => !predictor_processes[val][2]).forEach(id => {
             killDevices(predictor_processes[id], 'PREDICTOR', '-9');
         });
 
-        Object.keys(source_processes).forEach(id => {
+        Object.keys(source_processes).filter(val => !source_processes[val][2]).forEach(id => {
             killDevices(source_processes[id], 'SOURCE', '-9');
         });
 
-        Object.keys(target_processes).forEach(id => {
+        Object.keys(target_processes).filter(val => !target_processes[val][2]).forEach(id => {
             killDevices(target_processes[id], 'TARGET', '-9');
         });
     }
@@ -338,6 +348,9 @@ function startDevice(data){
             } else if (role === 't') {
                 client.emit(`target_closed-${id}`, {id: id, code: code});
             }
+
+
+            console.log("JUST FINISHED KILLING: " + handler);
         });
 
         // Add the output file if target
@@ -419,15 +432,17 @@ function streamData(c) {
 }
 
 function clientDisconnect(){
-    clearInterval(client);
-    client = null;
+    if (client !== undefined && client !== null){
+        client.disconnect(0);
+        client = null;
+    }
 
     stopConstellation();
     // Stop all currently running instances (if there are any)
     // Safety net if the stopConstellation method failed
     const params = ['-9', "`ps aux | grep 'constellation' | grep -v 'grep' | awk '{print $2}'`"];
 
-    let child = spawn('kill', params);
+    spawn('kill', params);
 }
 
 module.exports = {

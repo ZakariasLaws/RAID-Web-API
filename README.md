@@ -29,6 +29,8 @@ webpack -w
 Wait a few seconds for both the server to start and the bundles to be created, then open your browser and navigate to 
 `localhoist:3000`, this should show you the website.
 
+Change the hardcoded `CONSTELLATION_BIN_DIR` path in `src/utils` and `models/constellation.model/js`.
+
 ## Usage
 Use the navigation on the left side to toggle Device Management or Home (executing RAID). 
 

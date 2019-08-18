@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {Utils} from "./utils";
 import Plot from "react-plotly.js";
-import { Navbar, Nav, NavItem, NavDropdown, Form, Button } from "react-bootstrap";
+import { Navbar, Nav, NavItem, NavDropdown, Form, Button, FormControl } from "react-bootstrap";
 
 class ResultWrapper extends Component {
     constructor(props){
@@ -9,7 +9,7 @@ class ResultWrapper extends Component {
 
         this.state = {
             gettingResult: false,
-            figure:{
+            figure: {
                 frames: ["START"],
                 predictions: [0],
                 // devices: [],
@@ -17,6 +17,7 @@ class ResultWrapper extends Component {
                 models :[],
                 data: {}
             },
+            inferencesPerSecond: 0,
             plot: 'Throughput',
             counter: 0,
         };
@@ -75,7 +76,9 @@ class ResultWrapper extends Component {
 
         newFigureState['models'] = Array.from(models);
 
-        this.setState({figure: newFigureState, counter: counter});
+        let inferencesPerSecond = newFigureState.predictions.reduce((a,b) => {return a+b}) / newFigureState.predictions.length;
+
+        this.setState({figure: newFigureState, counter: counter, inferencesPerSecond: inferencesPerSecond.toFixed(2)});
     }
 
     setupSocket() {
@@ -165,12 +168,12 @@ class ResultWrapper extends Component {
                                 </NavDropdown>
                             </Nav>
                         </Navbar.Collapse>
-                        {
-                            this.state.plot.includes('Load Balance') ?
-                                <Form inline>
-                                    <Button onClick={this.refreshLoadBalance} variant="outline-success">Refresh</Button>
-                                </Form> : ''
-                        }
+                        <Form inline>
+                            <InferencesPerSecond inferencesPerSecond={this.state.inferencesPerSecond} showBar={this.state.plot.includes('Load Balance')}/>
+                            {this.state.plot.includes('Load Balance') ?
+                                <Button onClick={this.refreshLoadBalance} variant="outline-success"> Refresh </Button> : ''
+                            }
+                        </Form>
                     </Navbar>
                     <div className="Result-content">
                         {
@@ -244,6 +247,20 @@ class ResultWrapper extends Component {
                 </div>
             </div>
         );
+    }
+}
+
+class InferencesPerSecond extends Component {
+    constructor(props){
+        super(props);
+    }
+
+    render () {
+        return (
+            <div className={this.props.showBar ? 'inferences-per-second-wrapper' : ''}>
+                <span className="inferences-per-second"> {this.props.inferencesPerSecond} </span>
+            </div>
+        )
     }
 }
 

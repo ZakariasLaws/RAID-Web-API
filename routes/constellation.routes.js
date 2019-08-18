@@ -90,7 +90,7 @@ io.on('connection', client => {
 
 server.listen(3300,  (err) => {
     if (err) throw err;
-    console.log('listening on port ' + 3300);
+    console.log('Socket listening on port ' + 3300);
 });
 
 // Routes
