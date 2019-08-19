@@ -101,6 +101,10 @@ function startConstellation(binDir, executionName) {
             const serverUrl = binDir + "/bin/distributed/constellation-server";
 
             // Create log directory
+            if (!fs.existsSync('logs')){
+                fs.mkdirSync('logs');
+            }
+
             let date = new Date();
             logDir = `logs/${date.getMonth()}-${date.getDate()}-${date.getFullYear()}`;
 
