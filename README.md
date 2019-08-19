@@ -10,7 +10,13 @@ should stop everything, but is not 100% fool-proof, so you might need to monitor
 errors. This can be done from the terminal using `top` or `ps aux`.
 
 ## Setup, Dependencies and Running
-Open a terminal window, clone the project, install dependencies and start the NodeJS server as follows:
+Open a terminal window, clone the project and preform the following modifications.
+
+Change the hardcoded `CONSTELLATION_BIN_DIR` path in `src/utils` and `models/constellation.model/js`.
+
+Add the file `database/devices.json` with the content `[]`.
+
+Install dependencies and start the NodeJS server as follows.
 
 ```shell script
 git clone https://github.com/ZakariasLaws/RAID-Web-API
@@ -28,8 +34,6 @@ webpack -w
 
 Wait a few seconds for both the server to start and the bundles to be created, then open your browser and navigate to 
 `localhoist:3000`, this should show you the website.
-
-Change the hardcoded `CONSTELLATION_BIN_DIR` path in `src/utils` and `models/constellation.model/js`.
 
 ## Usage
 Use the navigation on the left side to toggle Device Management or Home (executing RAID). 

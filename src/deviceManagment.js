@@ -36,9 +36,15 @@ class DeviceManagement extends Component {
     }
 
     updateStateDevices(devices) {
-        const targets = devices.filter(device => device.role === 't');
-        const sources = devices.filter(device => device.role === 's');
-        const predictors = devices.filter(device => device.role === 'p');
+        let targets = [];
+        let sources = [];
+        let predictors = [];
+
+        if (devices.length > 0) {
+            targets = devices.filter(device => device.role === 't');
+            sources = devices.filter(device => device.role === 's');
+            predictors = devices.filter(device => device.role === 'p');
+        }
 
         let sel;
         if (this.state.selection === 'sources')
