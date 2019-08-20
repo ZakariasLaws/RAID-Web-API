@@ -124,10 +124,21 @@ body {
 
     .card-header {
       font-weight: bold;
+
+      .drop-down-button {
+        position: absolute;
+        left: 15px;
+      }
     }
 
     .card-body {
       text-align: left;
+
+      .address {
+        text-align: center;
+        margin-bottom: 20px;
+        color:black;
+      }
 
       .card-title {
         input {

@@ -105,7 +105,6 @@ class Content extends Component {
                     resolve()
                 })
                 .catch(err => {
-                    console.log("Device failed to stop");
                     reject(err);
                 });
         });

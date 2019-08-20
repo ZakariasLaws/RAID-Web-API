@@ -175,11 +175,6 @@ class Source extends Component {
     }
 
     render() {
-        // Make sure to stop if server is stopped
-        if (!this.props.running && this.state.running && !this.state.stopping) {
-            this.stopDevice();
-        }
-
         return (
             <div className="device-target card bg-white mb-3">
                 <div className="card-header">
@@ -200,8 +195,8 @@ class Source extends Component {
                     }
                 </div>
                 <div className="card-body">
+                    <h5 className="address">{this.props.data.username}@{this.props.data.ip}</h5>
                     { this.state.extraInfoOpen ? <div>
-                        <h5>IP: {this.props.data.ip}</h5>
                         <h5 className="card-title">Contexts: <input value={this.state.contexts} onChange={this.updateContexts}/></h5>
                         <h5 className="card-title">Source Directory: <input value={this.state.sourceDir} onChange={this.updateSourceDir}/></h5>
                         <h5 className="card-title">Time Between Batches: <input value={this.state.timeInterval} onChange={this.updateTimeInterval}/></h5>

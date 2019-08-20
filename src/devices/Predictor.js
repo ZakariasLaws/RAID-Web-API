@@ -87,7 +87,7 @@ class Predictor extends Component {
         }
 
         if (code === 130 || code === 137 || code === 255) {
-            console.log("PREDICTOR DEVICE with id " + this.props.id + " IS STOPPED ");
+            console.log("PREDICTOR DEVICE IS STOPPED ");
             this.setState({running: false, starting: false, stopping: false});
         } else {
             console.log("Shutdown PREDICTOR failed with response " + JSON.stringify(data));
@@ -110,11 +110,6 @@ class Predictor extends Component {
     }
 
     render() {
-        // Make sure to stop if server is stopped
-        if (!this.props.running && this.state.running && !this.state.stopping) {
-            this.stopDevice();
-        }
-
         return (
             <div className="device-predictor card bg-white mb-3">
                 <div className="card-header">
@@ -135,8 +130,8 @@ class Predictor extends Component {
                     }
                 </div>
                 <div className="card-body">
+                    <h5 className="address">{this.props.data.username}@{this.props.data.ip}</h5>
                     { this.state.extraInfoOpen ? <div>
-                        <h5>IP: {this.props.data.ip}</h5>
                         <h5 className="card-title">Contexts: <input value={this.state.contexts} onChange={this.updateContexts}/></h5>
                         <h5 className="card-title">Executors: <input style={{width:'30px'}} value={this.state.executors} onChange={this.updateExecutors}/></h5>
                     </div> : ''}

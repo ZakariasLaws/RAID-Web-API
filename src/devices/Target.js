@@ -98,11 +98,6 @@ class Target extends Component {
     }
 
     render() {
-        // Make sure to stop if server is stopped
-        if (!this.props.running && this.state.running && !this.state.stopping) {
-            this.stopDevice();
-        }
-
         return (
             <div className="device-target card bg-white mb-3">
                 <div className="card-header">
@@ -123,8 +118,8 @@ class Target extends Component {
                     }
                 </div>
                 <div className="card-body">
+                    <h5 className="address">{this.props.data.username}@{this.props.data.ip}</h5>
                     { this.state.extraInfoOpen ? <div>
-                        <h5>IP: {this.props.data.ip}</h5>
                     </div> : ''}
                     <div className="card-text">
                         { this.state.running ?

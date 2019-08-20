@@ -7,6 +7,8 @@ class ResultWrapper extends Component {
     constructor(props){
         super(props);
 
+        let inferencesPerSecond = 0;
+
         this.state = {
             gettingResult: false,
             figure: {
@@ -17,7 +19,7 @@ class ResultWrapper extends Component {
                 models :[],
                 data: {}
             },
-            inferencesPerSecond: 0,
+            inferencesPerSecond: inferencesPerSecond.toFixed(2),
             plot: 'Throughput',
             counter: 0,
         };
@@ -41,7 +43,10 @@ class ResultWrapper extends Component {
         let newFigureState = {frames: Array.from(this.state.figure.frames), predictions: Array.from(this.state.figure.predictions), data: JSON.parse(JSON.stringify(this.state.figure.data))};
 
         let counter = this.state.counter += 1;
-        newFigureState.frames.push(`${counter}`);
+        // let time = (new Date).clearTime().addSeconds(counter).toString();
+        let time = new Date(counter * 1000).toISOString().substr(11, 8);
+
+        newFigureState.frames.push(time);
         newFigureState.predictions.push(response.length);
 
         if (newFigureState.frames.length > 15) {
@@ -101,8 +106,8 @@ class ResultWrapper extends Component {
     refreshLoadBalance() {;
         let data = this.state.figure;
         data = {
-                frames: ["0"],
-                predictions: [0],
+                frames: Array.from(this.state.figure.frames),
+                predictions: Array.from(this.state.figure.predictions),
                 models :[],
                 data: {}
         };
@@ -258,7 +263,7 @@ class InferencesPerSecond extends Component {
     render () {
         return (
             <div className={this.props.showBar ? 'inferences-per-second-wrapper' : ''}>
-                <span className="inferences-per-second"> {this.props.inferencesPerSecond} </span>
+                <span className="inferences-per-second"> Inferences Per Second: {this.props.inferencesPerSecond} </span>
             </div>
         )
     }
