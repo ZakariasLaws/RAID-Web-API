@@ -217,6 +217,17 @@ class ConstellationServer extends Component {
                             </div> : <button className="start-constellation-button btn-dark" onClick={this.props.startConstellation}> START </button>
                     }
                 </div>
+                <div className="logos">
+                    <div className="vu-logo">
+
+                    </div>
+                    <div className="arm-logo">
+
+                    </div>
+                    <div className="escience-logo">
+
+                    </div>
+                </div>
             </div>
         )
     }

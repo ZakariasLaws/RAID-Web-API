@@ -187,11 +187,40 @@ body {
       display: inline-block;
       vertical-align: top;
 
-    h2 {
-        background-color: #bad7f1;
-        border-bottom: 1px solid #212629;
+      h2 {
+          background-color: #bad7f1;
+          border-bottom: 1px solid #212629;
       }
 
+      .logos {
+        width:100%;
+        margin-top: 50px;
+
+        div {
+          display: inline-block;
+          background-repeat: no-repeat;
+          background-size: cover;
+          width: 100px;
+          height: 100px;
+          margin: 0 20px 25px 20px;
+        }
+
+        .vu-logo {
+          background-image: url('../../public/images/logo_vu.svg');
+          height: 50px;
+          width: 210px;
+        }
+        .arm-logo {
+          background-image: url('../../public/images/arm-logo.png');
+          width: 150px;
+          height: 50px;
+        }
+        .escience-logo {
+          background-image: url('../../public/images/logo_netherlands_escience_center.svg');
+          width: 225px;
+          height: 50px;
+        }
+      }
     }
 
     .result-wrapper {
