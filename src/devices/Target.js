@@ -101,9 +101,9 @@ class Target extends Component {
         return (
             <div className="device-target card bg-white mb-3">
                 <div className="card-header">
-                    { this.state.extraInfoOpen ?
-                        <button className="drop-down-button btn-dark" onClick={() => this.changeDropMenu(false)}><FontAwesomeIcon icon="angle-down"/> </button> :
-                        <button className="drop-down-button btn-dark" onClick={() => this.changeDropMenu(true)}> <FontAwesomeIcon icon="angle-right"/> </button> }
+                    {/*{ this.state.extraInfoOpen ?*/}
+                    {/*    <button className="drop-down-button btn-dark" onClick={() => this.changeDropMenu(false)}><FontAwesomeIcon icon="angle-down"/> </button> :*/}
+                    {/*    <button className="drop-down-button btn-dark" onClick={() => this.changeDropMenu(true)}> <FontAwesomeIcon icon="angle-right"/> </button> }*/}
                     {this.props.data.title}
                     { this.state.running ?
                             <div className="device-spinner spinner-border text-success" role="status">
@@ -119,8 +119,8 @@ class Target extends Component {
                 </div>
                 <div className="card-body">
                     <h5 className="address">{this.props.data.username}@{this.props.data.ip}</h5>
-                    { this.state.extraInfoOpen ? <div>
-                    </div> : ''}
+                    {/*{ this.state.extraInfoOpen ? <div>*/}
+                    {/*</div> : ''}*/}
                     <div className="card-text">
                         { this.state.running ?
                             <button className="btn-danger" onClick={this.stopDevice}>
