@@ -197,7 +197,7 @@ function sendResultsToClient(){
         //     }
         // };
 
-        console.log("Transmitting " + values.length + " results to client");
+        // console.log("Transmitting " + values.length + " results to client");
 
         client.emit('data', values);
         buffer = [];
@@ -350,11 +350,8 @@ function startDevice(data){
             } else if (role === 's') {
                 client.emit(`source_closed-${id}`, {id: id, code: code});
             } else if (role === 't') {
-                client.emit(`target_closed-${id}`, {id: id, code: code});
-            }
+                client.emit(`target_closed-${id}`, {id: id, code: code});}
 
-
-            console.log("JUST FINISHED KILLING: " + handler);
         });
 
         // Add the output file if target

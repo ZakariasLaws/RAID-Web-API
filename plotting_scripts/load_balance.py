@@ -20,7 +20,7 @@ def start(data):
 
     for line in data:
         src = line['src']
-        prediction_location = line['prediction_location']
+        prediction_location = ':'.join(line['prediction_location'].split(':')[0:2])
 
         if prediction_location not in inferences.keys():
             inferences[prediction_location] = {line['model']: 1}

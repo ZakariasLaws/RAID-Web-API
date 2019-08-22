@@ -124,9 +124,11 @@ class ResultWrapper extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.running && !this.props.running && prevState.figure.frames.length > 1){
+            const inferencesPerSecond = 0;
             // Instance just stopped
-            this.setState({
-                figure:{
+            this.state = {
+                gettingResult: false,
+                figure: {
                     frames: ["START"],
                     predictions: [0],
                     // devices: [],
@@ -134,8 +136,10 @@ class ResultWrapper extends Component {
                     models :[],
                     data: {}
                 },
+                inferencesPerSecond: inferencesPerSecond.toFixed(2),
+                plot: 'Throughput',
                 counter: 0,
-            });
+            };
         }
     }
 
