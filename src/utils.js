@@ -15,7 +15,7 @@ export const Utils = {
         checkIfStopped: '/constellation/device/stopped',
         getResults: '/constellation/device/result',
     },
-    CONSTELLATION_BIN_DIR: "/home/zaklaw01/Projects/odroid-constellation/raid-constellation/build/install/raid-constellation",
+    CONSTELLATION_BIN_DIR: "/Users/zaklaw01/Projects/raid-constellation/build/install/raid-constellation", 
     ODROID_BIN_DIR: '/home/odroid/Constellation/raid-constellation/build/install/raid-constellation',
     views: {
         home: 'home',

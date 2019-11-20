@@ -4,7 +4,7 @@ const { spawn, exec } = require('child_process');
 const os = require('os');
 
 const poolName = "pool.name";
-const CONSTELLATION_BIN_DIR = "/home/zaklaw01/Projects/odroid-constellation/raid-constellation/build/install/raid-constellation";
+const CONSTELLATION_BIN_DIR = "/Users/zaklaw01/Projects/raid-constellation/build/install/raid-constellation"; 
 
 // Directory ame used for logging
 let logDir;
@@ -142,11 +142,7 @@ function startConstellation(binDir, executionName) {
 
                 server_port = info.split("-")[1];
                 let tmp = info.split("-")[0].split('/');
-                if (tmp.length > 1){
-                    server_ip = tmp[1];
-                } else {
-                    server_ip = tmp[0];
-                }
+                server_ip = tmp[0];
             });
 
             server_process.on('close', (code) => {

@@ -17,7 +17,10 @@ def start(data):
 
     execution_time = (end_time - start_time).total_seconds()
 
-    batch_size = len(data[0]['predictions'])
+    if "batch_size" in data[0].keys():
+        batch_size = int(data[0]['batch_size'])
+    else:
+        batch_size = len(data[0]['predictions'])
     odroids = []
 
     inferences = {}
@@ -27,17 +30,24 @@ def start(data):
         src = line['src']
         prediction_location = str(''.join(line['prediction_location'].split(':')[0:2]))
 
-        if prediction_location not in inferences.keys():
-            inferences[prediction_location] = {line['model']: 1}
-        elif line['model'] not in inferences[prediction_location].keys():
-            inferences[prediction_location][line['model']] = 1
+        if "batch_size" in data[0].keys():
+            local_batch_size = int(line['batch_size'])
         else:
-            inferences[prediction_location][line['model']] += 1
-        total_inferences += 1
+            local_batch_size = len(data[0]['predictions'])
+
+        if prediction_location not in inferences.keys():
+            inferences[prediction_location] = {line['model']: local_batch_size}
+        elif line['model'] not in inferences[prediction_location].keys():
+            inferences[prediction_location][line['model']] = local_batch_size
+        else:
+            inferences[prediction_location][line['model']] += local_batch_size
+
+        total_inferences += local_batch_size
 
     print "Execution time (s) " + str(execution_time)
     print "Batch size: " + str(batch_size)
     print "Odroids used: " + str(inferences.keys())
+    print "Total Inferences: " + str(total_inferences)
     print "Throughput: " + str(total_inferences / execution_time) + " I/S"
     print "Inferences per Odroid"
     for x in inferences:
