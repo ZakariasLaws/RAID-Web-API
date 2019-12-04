@@ -5,7 +5,6 @@ import sys
 import datetime
 import matplotlib.pyplot as plt
 
-
 performance = []
 
 
@@ -20,22 +19,34 @@ def start(data):
     performance.append(execution_time)
 
 
-def plot_normal(len):
-    global performance
-    x_labels = [x for x in range(1, len)]
+def plot_normal():
+    x_labels = [x for x in range(1, len(sys.argv)+1)]
 
     # plt.bar(x_labels, performance, align='center', alpha=1)
     plt.plot(x_labels, performance, alpha=1)
 
-    plt.ylabel('Execution Time (s)')
-    plt.xlabel('Number of Executors')
 
-    plt.show()
+def plot_multiple_lines():
+    global performance
+
+    lines = 2
+    length = (len(sys.argv)-1) / lines
+
+    plt.plot([x for x in range(1, length+1)], performance[length:length*2], alpha=1, color='red', label='CIFAR-10', linestyle='dashed')
+    plt.plot([x for x in range(1, length+1)], performance[0:length], alpha=1, color='blue', label='MNIST')
 
 
 if __name__ == "__main__":
+    global performance
+
     for x in range(1, len(sys.argv)):
         data = read_log.read_file(sys.argv[x])
         start(data)
 
-    plot_normal(len(sys.argv))
+    # plot_normal(1, len(sys.argv), performance, 'blue')
+    plot_multiple_lines()
+    plt.legend()
+
+    plt.ylabel('Execution Time (s)')
+    plt.xlabel('Number of Executors')
+    plt.show()

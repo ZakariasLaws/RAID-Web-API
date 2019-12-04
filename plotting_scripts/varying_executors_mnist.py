@@ -58,16 +58,20 @@ def plot_broken():
     plt.show()
 
 
-def plot_normal():
+def plot_normal(arg_len):
     global performance
-    x_labels = [x for x in range(1, 21)]
+    x_labels = [x for x in range(1, arg_len)]
+
+    print x_labels
 
     x_labels_large = [30, 40, 50]
 
     # plt.bar(x_labels, performance, align='center', alpha=1)
-    plt.plot(x_labels+x_labels_large, performance, alpha=1)
+    # plt.plot(x_labels+x_labels_large, performance, alpha=1)
+    plt.plot(x_labels, performance, alpha=1)
 
-    plt.xticks([x for x in range(0, len(x_labels)+1, 5)] + [x for x in x_labels_large if x % 10 == 0])
+    # plt.xticks([x for x in range(0, len(x_labels)+1, 5)] + [x for x in x_labels_large if x % 10 == 0])
+    plt.xticks([x for x in range(1, len(x_labels)+1)])
     plt.ylabel('Execution Time (s)')
     plt.xlabel('Executors/threads')
 
@@ -79,4 +83,4 @@ if __name__ == "__main__":
         data = read_log.read_file(sys.argv[x])
         start(data)
 
-    plot_broken()
+    plot_normal(len(sys.argv))
