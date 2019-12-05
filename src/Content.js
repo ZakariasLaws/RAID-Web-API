@@ -78,6 +78,7 @@ class Content extends Component {
             password: password,
             params: params,
         };
+        console.log(values);
         return new Promise((resolve, reject) => {
             fetch(Utils.CONSTELLATION_URL.startDevice, {
                 method: 'POST',

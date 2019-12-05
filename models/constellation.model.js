@@ -273,7 +273,7 @@ function startDevice(data){
                 if (!fs.existsSync(logDir + '/targets')){
                     fs.mkdirSync(logDir + '/targets');
                 }
-                deviceLogDir = logDir + '/targets/' + data.id + '.log'; // Might overwrite existing file
+                deviceLogDir = logDir + '/targets/' + (data.id + 1) + '.log'; // Might overwrite existing file
                 handler = [`${data.username}@${data.ip}`, spawn(scriptLoc, params), false, fs.createWriteStream(deviceLogDir)];
                 target_processes[data.id] = handler;
                 break;
@@ -281,7 +281,7 @@ function startDevice(data){
                 if (!fs.existsSync(logDir + '/sources')){
                     fs.mkdirSync(logDir + '/sources');
                 }
-                deviceLogDir = logDir + '/sources/' + data.id + '.log'; // Might overwrite existing file
+                deviceLogDir = logDir + '/sources/' + (data.id + 1) + '.log'; // Might overwrite existing file
                 handler = [`${data.username}@${data.ip}`, spawn(scriptLoc, params), false, fs.createWriteStream(deviceLogDir)];
                 source_processes[data.id] = handler;
                 break;
@@ -289,7 +289,7 @@ function startDevice(data){
                 if (!fs.existsSync(logDir + '/predictors')){
                     fs.mkdirSync(logDir + '/predictors');
                 }
-                deviceLogDir = logDir + '/predictors/' + data.id + '.log'; // Might overwrite existing file
+                deviceLogDir = logDir + '/predictors/' + (data.id + 1) + '.log'; // Might overwrite existing file
                 handler = [`${data.username}@${data.ip}`, spawn(scriptLoc, params), false, fs.createWriteStream(deviceLogDir)];
                 predictor_processes[data.id] = handler;
                 break;
