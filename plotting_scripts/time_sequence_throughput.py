@@ -9,6 +9,7 @@ import numpy as np
 
 seconds_per_group = 1
 
+
 def start(data):
     start_time = datetime.datetime.strptime(data[0]['timestamp'], '%Y-%m-%dT%H:%M:%S.%f')
     end_time = datetime.datetime.strptime(data[-1]['timestamp'], '%Y-%m-%dT%H:%M:%S.%f')

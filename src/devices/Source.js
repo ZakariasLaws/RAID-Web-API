@@ -106,9 +106,17 @@ class Source extends Component {
             return;
         }
 
+        let target = "";
+        // --------- TEMPORARY SOLUTION Figure out target name ---------
+        if (this.state.targetName.split('-').length < 2){
+            target = "0:1:0";
+        } else {
+            target = this.state.targetName.split('-')[1].replace(/\s/g, '').concat(":1:0");
+        }
+
         let contexts = this.state.contexts.split(" ").join(',');
         // ./bin/distributed/run.bash s 10.72.154.139 pool.name A -target 0:1:0 -dataDir /home/zaklaw01/Desktop/coco/test2017/ -modelName yolo -batchSize 2
-        let params = `-context ${contexts} -batchSize ${this.state.batchSize} -dataDir ${this.state.sourceDir} -modelName ${this.state.modelName} -target 0:1:0 -endless ${this.state.endless} -batchCount ${this.state.batchCount} -timeInterval ${this.state.timeInterval}`;
+        let params = `-context ${contexts} -batchSize ${this.state.batchSize} -dataDir ${this.state.sourceDir} -modelName ${this.state.modelName} -target ${target} -endless ${this.state.endless} -batchCount ${this.state.batchCount} -timeInterval ${this.state.timeInterval}`;
 
         this.props.startDevice(this.props.id, this.props.data.ip, this.props.data.username, this.props.data.password, 's', params)
             .then(response => {
