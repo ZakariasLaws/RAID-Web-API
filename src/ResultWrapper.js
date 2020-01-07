@@ -192,14 +192,14 @@ class ResultWrapper extends Component {
                                     {type: 'bar', x: this.state.figure.frames, y: this.state.figure.predictions},
                                 ]}
                                 layout={{
-                                    width: 700, height: 400, title: 'Classifications Per Second',
+                                    width: 700, height: 400, title: 'RAID Throughput',
                                     xaxis: {
                                         visible: true,
-                                        title: "Seconds",
+                                        title: "Duration",
                                     },
                                     yaxis: {
                                         visible: true,
-                                        title: "Classifications"
+                                        title: "Predictions"
                                     }
                                 }}
                             /> : ''
@@ -218,14 +218,14 @@ class ResultWrapper extends Component {
                                         ]}
                                         key={key}
                                         layout={{
-                                            width: 700, height: 400, title: `Classificatons Per Device - ${val}`,
+                                            width: 700, height: 400, title: `Predictions Per Device - ${val}`,
                                             xaxis: {
                                                 visible: true,
                                                 title: "Devices",
                                             },
                                             yaxis: {
                                                 visible: true,
-                                                title: "Classifications"
+                                                title: "Predictions"
                                             }
                                         }}
                                     />
@@ -240,14 +240,14 @@ class ResultWrapper extends Component {
                                     {type: 'bar', x: load_balance_all_devices.map(device => device[0]), y: load_balance_all_devices.map(device => device[1])},
                                 ]}
                                 layout={{
-                                    width: 700, height: 400, title: 'Classifications per device - All',
+                                    width: 700, height: 400, title: 'Predictions per device - All',
                                     xaxis: {
                                         visible: true,
                                         title: "Devices",
                                     },
                                     yaxis: {
                                         visible: true,
-                                        title: "Classifications"
+                                        title: "Predictions"
                                     }
                                 }}
                                 /> : ''

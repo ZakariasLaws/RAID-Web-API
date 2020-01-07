@@ -48,6 +48,18 @@ function recursiveCreateFileName(executionName, counter){
 
 }
 
+/**
+ * Signals a RAID agent to terminate using kill -2 <process_name>
+ *
+ * Since this method kills the processes using a process name, it will kill all agents of the same role
+ * on the targeted device. For example, if we have 2 local SOURCES and kill this method on one of them, both
+ * will be killed. TODO fix this by e.g. storing the PID of each individual process in the *handler*
+ *
+ * @param device
+ * @param role
+ * @param type
+ * @returns {Promise<unknown>}
+ */
 function killDevices(device, role, type){
     console.log("Stopping " + device[0] + " " + role);
 
@@ -106,7 +118,7 @@ function startConstellation(binDir, executionName) {
             }
 
             let date = new Date();
-            logDir = `logs/${date.getMonth()}-${date.getDate()}-${date.getFullYear()}`;
+            logDir = `logs/${date.getMonth()+1}-${date.getDate()}-${date.getFullYear()}`;
 
             if (!fs.existsSync(logDir)){
                 fs.mkdirSync(logDir);
@@ -258,8 +270,14 @@ function startDevice(data){
         let params = [`${data.username}@${data.ip}`, data.role, server_ip, poolName, data.params];
         let outputFile, profileOutput;
 
+        let title = ''; // For target only
+
         // Add output file to logs
         if (data.role === 't'){
+            // Remove title from params HAD TO BE LAST ELEMENT
+            title = params[4].split('title: ')[1].trim();
+            params[4] = params[4].split('title: ')[0];
+
             outputFile = require('path').resolve(__dirname, '..') + '/' + logDir + '/targets/' + data.id + '-results.log';
             profileOutput = require('path').resolve(__dirname, '..') + '/' + logDir + '/targets/' + data.id + '-gantt';
             params.push(`-outputFile ${outputFile}`);
@@ -274,7 +292,7 @@ function startDevice(data){
                     fs.mkdirSync(logDir + '/targets');
                 }
                 deviceLogDir = logDir + '/targets/' + (data.id + 1) + '.log'; // Might overwrite existing file
-                handler = [`${data.username}@${data.ip}`, spawn(scriptLoc, params), false, fs.createWriteStream(deviceLogDir)];
+                handler = [`${data.username}@${data.ip}`, spawn(scriptLoc, params), false, fs.createWriteStream(deviceLogDir), title, ''];
                 target_processes[data.id] = handler;
                 break;
             case 's':
@@ -282,6 +300,21 @@ function startDevice(data){
                     fs.mkdirSync(logDir + '/sources');
                 }
                 deviceLogDir = logDir + '/sources/' + (data.id + 1) + '.log'; // Might overwrite existing file
+
+                // Get the ID of selected target FAILS IF THE TARGET DOES NOT EXIST
+                let targetName = params[4].split('-target ')[1].trim();
+                params[4] = params[4].split('-target')[0];
+                let values = Object.values(target_processes).filter(val => {if (val[4] === targetName) return val});
+
+                if (values.length === 0) {
+                    console.log("Target \"" + targetName + "\" is not running");
+                    reject("Target \"" + targetName + "\" is not running");
+                    break;
+                } else {
+                    params[4] += '-target ' + values[0][5];
+                    console.log(params[4]);
+                }
+
                 handler = [`${data.username}@${data.ip}`, spawn(scriptLoc, params), false, fs.createWriteStream(deviceLogDir)];
                 source_processes[data.id] = handler;
                 break;
@@ -312,6 +345,8 @@ function startDevice(data){
                 `${data}`.split('\n').forEach(val => {
                     if (`${val}`.includes('classified at')) {
                         streamClassification(`${val}=${id}`);
+                    } else if (`${val}`.includes('when initializing the new SOURCE: ')) {
+                        handler[5] = `${val}`.split('SOURCE: "')[1].replace(/"/g, "").trim();
                     }
                 });
             } else if (role === 'p'){
@@ -346,7 +381,8 @@ function startDevice(data){
             } else if (role === 's') {
                 client.emit(`source_closed-${id}`, {id: id, code: code});
             } else if (role === 't') {
-                client.emit(`target_closed-${id}`, {id: id, code: code});}
+                client.emit(`target_closed-${id}`, {id: id, code: code});
+            }
 
         });
 

@@ -34,7 +34,7 @@ class Target extends Component {
             return;
         }
 
-        this.props.startDevice(this.props.id, this.props.data.ip, this.props.data.username, this.props.data.password, 't', "")
+        this.props.startDevice(this.props.id, this.props.data.ip, this.props.data.username, this.props.data.password, 't', "title: " + this.props.data.title)
             .then(response => {
                 this.setState({running: true});
             })
