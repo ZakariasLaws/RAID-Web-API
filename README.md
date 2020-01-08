@@ -10,7 +10,7 @@ the Devices page is used to manage resources.
 ## Setup, Dependencies and Running
 Open a terminal window, clone the project and preform the following modifications.
 
-Change the hardcoded `CONSTELLATION_BIN_DIR` path in `src/utils` and `models/constellation.model/js`.
+Change the hardcoded `RAID_BIN_DIR` path in `src/utils`. If using an external device, also modify the `DEVICE_BIN_DIR`.
 
 Add the file `database/devices.json` with the content `[]`.
 
@@ -23,15 +23,15 @@ npm install
 nodeamon
 ```
 
-In a separate window, start watching the files using webpack:
+In a separate window, start watching the source files for changes using webpack:
 
 ```shell script
 cd RAID-Web-Api
-webpack -w
+./node_modules/webpack/bin/webpack.js -w
 ```
 
 Wait a few seconds for both the server to start and the bundles to be created, then open your browser and navigate to 
-`localhoist:3000`, this should show you the website.
+`localhoist:3000`.
 
 ## Usage
 Use the navigation on the left side to toggle Device Management or Home (executing RAID). 

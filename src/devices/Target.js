@@ -51,7 +51,7 @@ class Target extends Component {
                     if (this.state.stopping || this.state.running) {
                         console.log("TIMEOUT shutting down TARGET");
                         // Double check
-                        fetch(`${Utils.CONSTELLATION_URL.checkIfStopped}?role=t&id=${this.props.id}`)
+                        fetch(`${Utils.RAID_URL.checkIfStopped}?role=t&id=${this.props.id}`)
                             .then(Utils.handleFetchErrors)
                             .then(response => {
                                 console.log("TARGET DEVICE IS ALREADY STOPPED");

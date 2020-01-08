@@ -7,16 +7,16 @@ const handleErrors = (response) => {
 
 export const Utils = {
     API_URL: '/api/devices',
-    CONSTELLATION_URL: {
-        start: '/constellation/start',
-        stop: '/constellation/stop',
-        startDevice: '/constellation/device/start',
-        stopDevice: '/constellation/device/stop',
-        checkIfStopped: '/constellation/device/stopped',
-        getResults: '/constellation/device/result',
+    RAID_URL: {
+        start: '/raid/start',
+        stop: '/raid/stop',
+        startDevice: '/raid/device/start',
+        stopDevice: '/raid/device/stop',
+        checkIfStopped: '/raid/device/stopped',
+        getResults: '/raid/device/result',
     },
-    CONSTELLATION_BIN_DIR: "/Users/zaklaw01/Projects/raid-constellation/build/install/raid-constellation", 
-    ODROID_BIN_DIR: '/home/odroid/Constellation/raid-constellation/build/install/raid-constellation',
+    RAID_BIN_DIR: "/home/zakarias/Projects/raid-constellation/build/install/raid-constellation",
+    DEVICE_BIN_DIR: '/home/odroid/Constellation/raid-constellation/build/install/raid-constellation',
     views: {
         home: 'home',
         deviceManagement: 'deviceManagement',

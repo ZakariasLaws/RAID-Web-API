@@ -129,7 +129,7 @@ class Source extends Component {
                     if (this.state.stopping || this.state.running) {
                         console.log("TIMEOUT shutting down SOURCE");
                         // Double check
-                        fetch(`${Utils.CONSTELLATION_URL.checkIfStopped}?role=s&id=${this.props.id}`)
+                        fetch(`${Utils.RAID_URL.checkIfStopped}?role=s&id=${this.props.id}`)
                             .then(Utils.handleFetchErrors)
                             .then(response => {
                                 console.log("SOURCE DEVICE IS ALREADY STOPPED");

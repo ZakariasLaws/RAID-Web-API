@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const constellation = require('./../models/constellation.model');
+const constellation = require('../models/raid.model');
 
 const server = require('http').createServer();
 const io = require('socket.io')(server);

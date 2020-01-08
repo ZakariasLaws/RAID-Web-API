@@ -4,7 +4,7 @@ const { spawn, exec } = require('child_process');
 const os = require('os');
 
 const poolName = "pool.name";
-const CONSTELLATION_BIN_DIR = "/Users/zaklaw01/Projects/raid-constellation/build/install/raid-constellation"; 
+const RAID_BIN_DIR = process.env.RAID_DIR;
 
 // Directory ame used for logging
 let logDir;
@@ -265,7 +265,7 @@ function stopConstellation() {
 
 function startDevice(data){
     return new Promise((resolve, reject) => {
-        const scriptLoc = CONSTELLATION_BIN_DIR + "/bin/distributed/remote_execution/start_remote.bash";
+        const scriptLoc = RAID_BIN_DIR + "/bin/distributed/remote_execution/start_remote.bash";
 
         let params = [`${data.username}@${data.ip}`, data.role, server_ip, poolName, data.params];
         let outputFile, profileOutput;

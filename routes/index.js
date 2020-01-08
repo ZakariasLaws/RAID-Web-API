@@ -8,6 +8,6 @@ router.get('/', function(req, res, next) {
 
 
 router.use('/api/devices', require('./post.routes'));
-router.use('/constellation', require('./constellation.routes'));
+router.use('/raid', require('./raid.routes'));
 
 module.exports = router;

@@ -45,7 +45,7 @@ class Content extends Component {
 
         const executionName = this.state.executionName.split(' ').join('-').split('/').join('_');
 
-        fetch(`${Utils.CONSTELLATION_URL.start}?binDir=${Utils.CONSTELLATION_BIN_DIR}&executionName=${executionName}`)
+        fetch(`${Utils.RAID_URL.start}?binDir=${Utils.RAID_BIN_DIR}&executionName=${executionName}`)
             .then(Utils.handleFetchErrors)
             .then(response => response.json())
             .then(response => {
@@ -58,7 +58,7 @@ class Content extends Component {
     }
 
     stopConstellation(){
-        fetch(Utils.CONSTELLATION_URL.stop)
+        fetch(Utils.RAID_URL.stop)
             .then(response => response.json())
             .then(response => {
                 this.props.updateRunning(false);
@@ -80,7 +80,7 @@ class Content extends Component {
         };
 
         return new Promise((resolve, reject) => {
-            fetch(Utils.CONSTELLATION_URL.startDevice, {
+            fetch(Utils.RAID_URL.startDevice, {
                 method: 'POST',
                 body: JSON.stringify(values),
                 headers: {
@@ -100,7 +100,7 @@ class Content extends Component {
 
     stopDevice(id, role){
         return new Promise((resolve, reject) => {
-            fetch(`${Utils.CONSTELLATION_URL.stopDevice}?role=${role}&id=${id}`)
+            fetch(`${Utils.RAID_URL.stopDevice}?role=${role}&id=${id}`)
                 .then(Utils.handleFetchErrors)
                 .then(response => {
                     resolve()
