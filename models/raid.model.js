@@ -45,7 +45,6 @@ function recursiveCreateFileName(executionName, counter){
         return tmp;
     }
     return recursiveCreateFileName(executionName, counter + 1);
-
 }
 
 /**
@@ -70,6 +69,7 @@ function killDevices(device, role, type){
             exec(cmdString, (err, stdout, stderr) => {
                 // console.log(err + " " + stdout + " " + stderr);
             });
+
             resolve();
             return;
         }
@@ -89,6 +89,15 @@ function killDevices(device, role, type){
         child.on('close', (code) => {
             // console.log(`child process exited with code ${code}`);
         });
+
+        // TODO Check if there are multiple predictors on the device,
+        // TODO if that is the case, tensorflow serving should NOT be shutdown
+
+        // Shutdown Docker
+        const shutdownDockerParams = ['-tt', device[0], 'docker rm $(docker stop $(docker ps -a -q --filter ancestor=tensorflow/serving --format="{{.ID}}"))'];
+
+        spawn('ssh', shutdownDockerParams);
+
         resolve();
     });
 }
@@ -261,6 +270,12 @@ function stopConstellation() {
     predictor_processes = [];
     source_processes = [];
     target_processes = [];
+
+    // In case the user was using Docker for TensorFlow Serving, it must be shutdown independently
+    const stopDocker = "docker rm $(docker stop $(docker ps -a -q --filter ancestor=tensorflow/serving --format=\"{{.ID}}\"))";
+    exec(stopDocker, (err, stdout, stderr) => {
+        // console.log(err + " " + stdout + " " + stderr);
+    });
 }
 
 function startDevice(data){
@@ -323,7 +338,8 @@ function startDevice(data){
                     fs.mkdirSync(logDir + '/predictors');
                 }
                 deviceLogDir = logDir + '/predictors/' + (data.id + 1) + '.log'; // Might overwrite existing file
-                handler = [`${data.username}@${data.ip}`, spawn(scriptLoc, params), false, fs.createWriteStream(deviceLogDir)];
+                // [host, run script, running, writeStream, docker id]
+                handler = [`${data.username}@${data.ip}`, spawn(scriptLoc, params), false, fs.createWriteStream(deviceLogDir), false];
                 predictor_processes[data.id] = handler;
                 break;
             default:
