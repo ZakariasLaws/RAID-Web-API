@@ -1,4 +1,4 @@
-# RAID Web API
+# RAID Web GUI
 
 A user interface for visualizing results and increasing usability of [RAID-Constellation](https://github.com/ZakariasLaws/RAID-constellation).
 
@@ -17,8 +17,8 @@ Add the file `database/devices.json` with the content `[]`.
 Install dependencies and start the NodeJS server as follows.
 
 ```shell script
-git clone https://github.com/ZakariasLaws/RAID-Web-API
-cd RAID-Web-Api
+git clone https://github.com/ZakariasLaws/RAID-Web-
+cd RAID-Web-GUI
 npm install
 nodeamon
 ```
@@ -26,7 +26,7 @@ nodeamon
 In a separate window, start watching the source files for changes using webpack:
 
 ```shell script
-cd RAID-Web-Api
+cd RAID-Web-GUI
 ./node_modules/webpack/bin/webpack.js -w
 ```
 
@@ -43,7 +43,7 @@ upper left corner, fill out the form fields to add a new device and submit. We m
 Predictor and Target, s=Source, p=Predictor and t=Target.
 
 In order for the connection to work, ssh keys **MUST** have been exchanged between
-the host running the web API and the remote device. In the backend, a ssh connection will be setup to the device and it
+the host running the web GUI and the remote device. In the backend, a ssh connection will be setup to the device and it
 will use the ssh keys located in the `~/.ssh` folder. Follow this guide to setup and copy the appropriate key to the 
 remote device: [https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys--2](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys--2)
 
