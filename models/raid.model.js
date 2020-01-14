@@ -28,6 +28,7 @@ let client;
 
 /**
  * Sleep for given time
+ * Sleep for given time
  * @param ms time to sleep
  */
 function wait(ms){
